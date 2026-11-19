@@ -88,7 +88,7 @@
       display: block;
     }
 
-    /* UPLOAD DE BASES (SAP & BI) */
+    /* UPLOAD & CADASTRO MANUAL DE BASES (SAP & BI) */
     .bases-bar {
       display: flex;
       flex-wrap: wrap;
@@ -123,6 +123,26 @@
 
     .upload-pill input {
       display: none;
+    }
+
+    .btn-manual-base {
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      color: #c4b5fd;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-manual-base:hover {
+      background: #7c3aed;
+      color: #fff;
     }
 
     /* NAVEGAÇÃO DE ABAS */
@@ -229,9 +249,9 @@
 
     .input-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 14px;
-      align-items: end;
+      align-items: start;
     }
 
     .field-group {
@@ -246,14 +266,18 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .serial-input-row {
       display: flex;
       gap: 8px;
+      align-items: stretch;
     }
 
-    input[type="text"], select {
+    input[type="text"], input[type="date"], select, textarea {
       width: 100%;
       background: var(--bg-input);
       border: 1px solid var(--border);
@@ -265,9 +289,21 @@
       transition: border-color 0.2s;
     }
 
-    input[type="text"]:focus, select:focus {
+    textarea {
+      resize: vertical;
+      min-height: 82px;
+      line-height: 1.45;
+      font-family: monospace;
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .helper-hint {
+      font-size: 0.74rem;
+      color: var(--text-muted);
     }
 
     /* BOTÕES */
@@ -394,7 +430,7 @@
       border: 1px solid rgba(148, 163, 184, 0.4);
     }
 
-    /* MODAL DA CÂMERA */
+    /* MODAIS (CÂMERA E CADASTRO MANUAL SAP/BI) */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -404,6 +440,7 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
+      overflow-y: auto;
     }
 
     .modal-overlay.open {
@@ -415,16 +452,27 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       width: 100%;
-      max-width: 480px;
-      padding: 20px;
+      max-width: 560px;
+      padding: 22px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      max-height: 92vh;
+      overflow-y: auto;
     }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     #reader {
@@ -459,7 +507,7 @@
 </head>
 <body>
 
-  <!-- CABEÇALHO E IMPORTAÇÃO DE BASES -->
+  <!-- CABEÇALHO E IMPORTAÇÃO / DIGITAÇÃO DE BASES -->
   <header>
     <div class="brand">
       <div class="brand-icon">
@@ -472,6 +520,10 @@
     </div>
 
     <div class="bases-bar">
+      <button type="button" class="btn-manual-base" onclick="abrirModalManual()">
+        <i data-lucide="edit-3" size="16"></i> Digitar Dados SAP / BI
+      </button>
+
       <label class="upload-pill" id="lbl-sap">
         <i data-lucide="database" size="16"></i>
         <span id="txt-sap">Importar Base SAP (.xlsx/.csv)</span>
@@ -511,13 +563,92 @@
   </nav>
 
   <!-- CONTEÚDO DAS ABAS -->
-  <main id="panels-container">
-    <!-- Os painéis são renderizados dinamicamente para garantir funcionamento idêntico e sem bugs -->
-  </main>
+  <main id="panels-container"></main>
+
+  <!-- MODAL CADASTRO MANUAL DE DADOS SAP & BI -->
+  <div class="modal-overlay" id="manual-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <strong style="display:flex;align-items:center;gap:8px;font-size:1rem;">
+          <i data-lucide="file-plus-2" color="#a78bfa"></i> Cadastrar / Atualizar Dados SAP & BI
+        </strong>
+        <button class="btn btn-danger" style="padding:6px 12px;" onclick="fecharModalManual()">Fechar</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field-group">
+          <label>Base de Origem</label>
+          <select id="man-origem">
+            <option value="AMBOS">Ambas (BI Equatorial + SAP)</option>
+            <option value="BI">Somente BI Equatorial</option>
+            <option value="SAP">Somente SAP</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Número de Série *</label>
+          <div class="serial-input-row">
+            <input type="text" id="man-serie" placeholder="Ex: 12345678" />
+            <button type="button" class="btn btn-camera" style="padding:8px 12px;" onclick="abrirCamera('MANUAL')" title="Ler com câmera">
+              <i data-lucide="camera" size="16"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Material</label>
+          <input type="text" id="man-material" placeholder="Ex: 1004521 - Monofásico" />
+        </div>
+
+        <div class="field-group">
+          <label>DEP (Depósito)</label>
+          <input type="text" id="man-dep" placeholder="Ex: D001 / AL01" />
+        </div>
+
+        <div class="field-group">
+          <label>Status Usuário</label>
+          <input type="text" id="man-status-usu" placeholder="Ex: DISP / INST / LAB" />
+        </div>
+
+        <div class="field-group">
+          <label>Status Sistema</label>
+          <input type="text" id="man-status-sis" placeholder="Ex: ESTO / ATIV / DESA" />
+        </div>
+
+        <div class="field-group">
+          <label>Data Última Movimentação</label>
+          <input type="text" id="man-data-mov" placeholder="DD/MM/AAAA" />
+        </div>
+
+        <div class="field-group">
+          <label>Data de Instalação (se tiver)</label>
+          <input type="text" id="man-data-inst" placeholder="DD/MM/AAAA ou vazio" />
+        </div>
+
+        <div class="field-group" style="grid-column: 1 / -1;">
+          <label>Prazo</label>
+          <select id="man-prazo">
+            <option value="">Calcular automaticamente pela Data de Movimentação</option>
+            <option value="DENTRO DO PRAZO">DENTRO DO PRAZO</option>
+            <option value="ALERTA">ALERTA</option>
+            <option value="CRÍTICO">CRÍTICO</option>
+            <option value="FORA DO PRAZO">FORA DO PRAZO</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" class="btn btn-danger" onclick="limparFormularioManual()">Limpar Campos</button>
+        <button type="button" class="btn btn-success" onclick="salvarDadosManuais()">
+          <i data-lucide="save" size="16"></i> Salvar na Base
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL CÂMERA CÓDIGO DE BARRAS -->
   <div class="modal-overlay" id="camera-modal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width:480px;">
       <div class="modal-header">
         <strong style="display:flex;align-items:center;gap:8px;">
           <i data-lucide="scan-barcode"></i> Ler Código de Barras
@@ -552,7 +683,7 @@
     let registrosPorAba = JSON.parse(localStorage.getItem('cm_registros') || '{"consulta":[],"expedicao":[],"recebimento":[],"devolvido":[],"sucata":[]}');
 
     let html5QrCode = null;
-    let abaCameraAtual = null;
+    let alvoCameraAtual = null;
 
     // ==========================================
     // INICIALIZAÇÃO DA INTERFACE
@@ -585,25 +716,24 @@
 
             <div class="input-grid">
               <div class="field-group" style="grid-column: span 2;">
-                <label>Número de Série do Medidor</label>
+                <label>
+                  <span>Números de Série (Um abaixo do outro ou bipando)</span>
+                  <span style="color:#60a5fa; font-size:0.72rem;">Suporta múltiplos medidores de uma vez</span>
+                </label>
                 <div class="serial-input-row">
-                  <input type="text" id="input-serie-${aba.id}" placeholder="Digite ou bipe o número de série..." autocomplete="off"
-                    onkeydown="if(event.key==='Enter'){ adicionarMedidor('${aba.id}'); }" />
+                  <textarea id="input-serie-${aba.id}" placeholder="Digite ou cole vários números de série (um por linha)&#10;Ex:&#10;98765432&#10;98765433&#10;98765434"></textarea>
                   <button type="button" class="btn btn-camera" onclick="abrirCamera('${aba.id}')" title="Ler código de barras com a câmera">
                     <i data-lucide="camera" size="18"></i> Câmera
                   </button>
                 </div>
+                <span class="helper-hint">Dica: Pressione <strong>Enter</strong> para pular linha e digitar o próximo medidor, ou <strong>Ctrl + Enter</strong> para consultar todos.</span>
               </div>
 
               <div class="field-group">
                 <label>${aba.extraLabel}</label>
-                <input type="text" id="input-extra-${aba.id}" placeholder="${aba.extraPlaceholder}"
-                  onkeydown="if(event.key==='Enter'){ adicionarMedidor('${aba.id}'); }" />
-              </div>
-
-              <div class="field-group">
-                <button type="button" class="btn btn-primary" style="width:100%;" onclick="adicionarMedidor('${aba.id}')">
-                  <i data-lucide="plus-circle" size="18"></i> Adicionar Medidor
+                <input type="text" id="input-extra-${aba.id}" placeholder="${aba.extraPlaceholder}" />
+                <button type="button" class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="adicionarMedidores('${aba.id}')">
+                  <i data-lucide="search-check" size="18"></i> Consultar / Adicionar Todos
                 </button>
               </div>
             </div>
@@ -633,9 +763,17 @@
           </div>
         `;
         container.appendChild(section);
+
+        // Atalho Ctrl+Enter no textarea para enviar lista
+        const txtArea = document.getElementById(`input-serie-${aba.id}`);
+        txtArea.addEventListener('keydown', (e) => {
+          if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            adicionarMedidores(aba.id);
+          }
+        });
       });
 
-      // Configura cliques das abas (Correção definitiva)
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const target = btn.getAttribute('data-tab');
@@ -643,10 +781,7 @@
         });
       });
 
-      // Atualiza indicadores das bases já salvas no cache
       atualizarStatusBases();
-
-      // Renderiza tabelas salvas
       ABAS_CONFIG.forEach(aba => renderizarTabela(aba.id));
       lucide.createIcons();
     }
@@ -661,9 +796,79 @@
       if (btnAtivo) btnAtivo.classList.add('active');
       if (panelAtivo) panelAtivo.classList.add('active');
 
-      // Foca automaticamente no campo de série da aba aberta
       const input = document.getElementById(`input-serie-${tabId}`);
       if (input) setTimeout(() => input.focus(), 80);
+    }
+
+    // ==========================================
+    // CADASTRO MANUAL DE DADOS SAP E BI
+    // ==========================================
+    function abrirModalManual() {
+      document.getElementById('manual-modal').classList.add('open');
+      setTimeout(() => document.getElementById('man-serie').focus(), 80);
+    }
+
+    function fecharModalManual() {
+      document.getElementById('manual-modal').classList.remove('open');
+    }
+
+    function limparFormularioManual() {
+      document.getElementById('man-serie').value = '';
+      document.getElementById('man-material').value = '';
+      document.getElementById('man-dep').value = '';
+      document.getElementById('man-status-usu').value = '';
+      document.getElementById('man-status-sis').value = '';
+      document.getElementById('man-data-mov').value = '';
+      document.getElementById('man-data-inst').value = '';
+      document.getElementById('man-prazo').value = '';
+      document.getElementById('man-serie').focus();
+    }
+
+    function salvarDadosManuais() {
+      const origem    = document.getElementById('man-origem').value;
+      const serieRaw  = document.getElementById('man-serie').value.trim();
+      const material  = document.getElementById('man-material').value.trim();
+      const dep       = document.getElementById('man-dep').value.trim();
+      const statusUsu = document.getElementById('man-status-usu').value.trim();
+      const statusSis = document.getElementById('man-status-sis').value.trim();
+      const dataMov   = document.getElementById('man-data-mov').value.trim();
+      const dataInst  = document.getElementById('man-data-inst').value.trim();
+      const prazo     = document.getElementById('man-prazo').value.trim();
+
+      if (!serieRaw) {
+        mostrarToast('Informe o Número de Série para salvar na base.');
+        document.getElementById('man-serie').focus();
+        return;
+      }
+
+      const chave = normalizarSerie(serieRaw);
+      const registro = {
+        serieOriginal: serieRaw,
+        material,
+        dep,
+        statusUsuario: statusUsu,
+        statusSistema: statusSis,
+        dataMov,
+        dataInst,
+        prazo
+      };
+
+      if (origem === 'SAP' || origem === 'AMBOS') {
+        baseSAP[chave] = { ...(baseSAP[chave] || {}), ...Object.fromEntries(Object.entries(registro).filter(([_, v]) => v !== '')) };
+        baseSAP[chave].serieOriginal = serieRaw;
+        localStorage.setItem('cm_base_sap', JSON.stringify(baseSAP));
+      }
+
+      if (origem === 'BI' || origem === 'AMBOS') {
+        baseBI[chave] = { ...(baseBI[chave] || {}), ...Object.fromEntries(Object.entries(registro).filter(([_, v]) => v !== '')) };
+        baseBI[chave].serieOriginal = serieRaw;
+        localStorage.setItem('cm_base_bi', JSON.stringify(baseBI));
+      }
+
+      atualizarStatusBases();
+      reprocessarRegistrosExistentes();
+      mostrarToast(`Medidor ${serieRaw} salvo na base ${origem}!`);
+      limparFormularioManual();
     }
 
     // ==========================================
@@ -671,7 +876,7 @@
     // ==========================================
     function normalizarChave(str) {
       return String(str || '')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
         .toLowerCase()
         .replace(/[^a-z0-9]/g, '');
     }
@@ -712,7 +917,9 @@
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
           const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
-          const mapa = {};
+          const mapa = tipo === 'SAP' ? { ...baseSAP } : { ...baseBI };
+          let importados = 0;
+
           rows.forEach(row => {
             const serieBruta = extrairCampo(row, ['numeroserie', 'serie', 'serial', 'medidor', 'nserie', 'equipamento']);
             const serie = normalizarSerie(serieBruta);
@@ -728,6 +935,7 @@
               dataInst:      formatarDataExcel(extrairCampo(row, ['datainstalacao', 'instalacao', 'dtinstalacao', 'data_instalacao'])),
               prazo:         String(extrairCampo(row, ['prazo', 'statusprazo', 'situacaoprazo', 'criticidade', 'aging']) || '').trim()
             };
+            importados++;
           });
 
           if (tipo === 'SAP') {
@@ -740,7 +948,7 @@
 
           atualizarStatusBases();
           reprocessarRegistrosExistentes();
-          mostrarToast(`Base ${tipo} carregada com ${Object.keys(mapa).length} medidores!`);
+          mostrarToast(`Base ${tipo} atualizada (+${importados} medidores)!`);
         } catch (err) {
           alert(`Erro ao ler arquivo ${tipo}: ` + err.message);
         }
@@ -762,7 +970,7 @@
 
       if (qtdSap > 0) {
         document.getElementById('lbl-sap').classList.add('loaded');
-        document.getElementById('txt-sap').textContent = `SAP Carregado (${qtdSap})`;
+        document.getElementById('txt-sap').textContent = `Base SAP (${qtdSap})`;
       }
       if (qtdBi > 0) {
         document.getElementById('lbl-bi').classList.add('loaded');
@@ -792,7 +1000,6 @@
         };
       }
 
-      // Mescla priorizando dados preenchidos entre BI e SAP
       const material      = (bi && bi.material)      || (sap && sap.material)      || '-';
       const dep           = (sap && sap.dep)           || (bi && bi.dep)           || '-';
       const statusUsuario = (sap && sap.statusUsuario) || (bi && bi.statusUsuario) || '-';
@@ -801,7 +1008,6 @@
       const dataInst      = (bi && bi.dataInst)      || (sap && sap.dataInst)      || '-';
       let prazo           = (bi && bi.prazo)         || (sap && sap.prazo)         || '';
 
-      // Se a planilha não trouxer a coluna Prazo preenchida, calcula automaticamente pela Data de Movimentação
       if (!prazo && dataMov !== '-') {
         prazo = calcularPrazoPorData(dataMov);
       }
@@ -843,37 +1049,57 @@
     }
 
     // ==========================================
-    // MANIPULAÇÃO DE REGISTROS E PERSISTÊNCIA
+    // MANIPULAÇÃO DE MÚLTIPLOS MEDIDORES E PERSISTÊNCIA
     // ==========================================
-    function adicionarMedidor(abaId) {
+    function adicionarMedidores(abaId) {
       const inputSerie = document.getElementById(`input-serie-${abaId}`);
       const inputExtra = document.getElementById(`input-extra-${abaId}`);
 
-      const serie = inputSerie.value.trim();
+      const textoBruto = inputSerie.value.trim();
       const extra = inputExtra.value.trim();
 
-      if (!serie) {
-        mostrarToast('Digite ou leia o número de série do medidor.');
+      if (!textoBruto) {
+        mostrarToast('Digite ou cole um ou mais números de série.');
         inputSerie.focus();
         return;
       }
 
-      const dadosCruzados = consultarMedidorNasBases(serie);
-      dadosCruzados.extra = extra || '-';
-      dadosCruzados.horaRegistro = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      // Separa por quebra de linha, vírgula, ponto-e-vírgula ou espaço múltiplo
+      const listaSeries = textoBruto
+        .split(/[
+,;]+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
 
-      // Adiciona no topo da lista da aba
-      registrosPorAba[abaId].unshift(dadosCruzados);
+      if (listaSeries.length === 0) return;
+
+      let encontrados = 0;
+      let naoEncontrados = 0;
+
+      // Insere mantendo a ordem digitada no topo da tabela
+      const novosRegistros = listaSeries.map(serie => {
+        const dadosCruzados = consultarMedidorNasBases(serie);
+        dadosCruzados.extra = extra || '-';
+        dadosCruzados.horaRegistro = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        if (dadosCruzados.encontrado) encontrados++;
+        else naoEncontrados++;
+        return dadosCruzados;
+      });
+
+      registrosPorAba[abaId] = [...novosRegistros, ...registrosPorAba[abaId]];
       salvarRegistros();
       renderizarTabela(abaId);
 
       inputSerie.value = '';
       inputSerie.focus();
 
-      if (!dadosCruzados.encontrado) {
-        mostrarToast(`Medidor ${serie}: NÃO ENCONTRADO nas bases.`);
+      if (listaSeries.length === 1) {
+        const unico = novosRegistros[0];
+        mostrarToast(unico.encontrado
+          ? `Medidor ${unico.serie} adicionado (${unico.prazo}).`
+          : `Medidor ${unico.serie}: NÃO ENCONTRADO.`);
       } else {
-        mostrarToast(`Medidor ${serie} adicionado (${dadosCruzados.prazo}).`);
+        mostrarToast(`${listaSeries.length} medidores consultados (${encontrados} encontrados, ${naoEncontrados} não encontrados).`);
       }
     }
 
@@ -916,7 +1142,6 @@
       const tbody = document.getElementById(`tbody-${abaId}`);
       const lista = registrosPorAba[abaId] || [];
 
-      // Atualiza contador na aba
       const badgeCount = document.getElementById(`count-${abaId}`);
       if (badgeCount) badgeCount.textContent = lista.length;
 
@@ -924,7 +1149,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="11" class="empty-state">
-              Nenhum medidor bipado ou digitado nesta guia. Os registros ficarão salvos aqui até você clicar em <strong>Limpar</strong>.
+              Nenhum medidor consultado nesta guia. Digite um ou vários medidores (um abaixo do outro) e clique em <strong>Consultar / Adicionar Todos</strong>.
             </td>
           </tr>
         `;
@@ -984,8 +1209,8 @@
     // ==========================================
     // LEITOR DE CÓDIGO DE BARRAS PELA CÂMERA
     // ==========================================
-    function abrirCamera(abaId) {
-      abaCameraAtual = abaId;
+    function abrirCamera(alvo) {
+      alvoCameraAtual = alvo;
       const modal = document.getElementById('camera-modal');
       modal.classList.add('open');
 
@@ -1007,15 +1232,21 @@
         { facingMode: "environment" },
         config,
         (decodedText) => {
-          // Sucesso na leitura do código de barras
-          const input = document.getElementById(`input-serie-${abaCameraAtual}`);
-          if (input) {
-            input.value = decodedText.trim();
-            fecharCamera();
-            adicionarMedidor(abaCameraAtual);
+          const codigo = decodedText.trim();
+          fecharCamera();
+
+          if (alvoCameraAtual === 'MANUAL') {
+            document.getElementById('man-serie').value = codigo;
+            document.getElementById('man-material').focus();
+          } else {
+            const input = document.getElementById(`input-serie-${alvoCameraAtual}`);
+            if (input) {
+              input.value = input.value.trim() ? `${input.value.trim()}\n${codigo}` : codigo;
+              adicionarMedidores(alvoCameraAtual);
+            }
           }
         },
-        () => {} // Ignora frames sem leitura
+        () => {}
       ).catch(err => {
         alert("Não foi possível acessar a câmera. Verifique as permissões do navegador ou use HTTPS/localhost.\nErro: " + err);
         fecharCamera();
@@ -1043,10 +1274,9 @@
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => {
         toast.style.display = 'none';
-      }, 3200);
+      }, 3400);
     }
 
-    // Inicializa tudo ao abrir
     window.addEventListener('DOMContentLoaded', inicializar);
   </script>
 </body>
