@@ -3,85 +3,126 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1220">
-<title>Central de Medidores - Equatorial</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Medidores — Protocolo & Rastreio</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
 
 <style>
-:root{
---bg:#0b1220;--card:#131f33;--input:#091426;
---border:#2b3b54;--text:#edf4ff;--muted:#9aabc2;
---blue:#3b82f6;--green:#10b981;--yellow:#f59e0b;
---red:#ef4444;
+:root {
+  --bg:#090e18;
+  --panel:#111a2a;
+  --panel2:#172338;
+  --line:#26354c;
+  --text:#edf3ff;
+  --muted:#91a1ba;
+  --blue:#3986ff;
+  --green:#19c784;
+  --red:#ff626f;
+  --yellow:#f4bd4f;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}
-header{position:sticky;top:0;z-index:10;background:#101b2e;border-bottom:1px solid var(--border);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:42px;height:42px;background:var(--blue);border-radius:10px;display:grid;place-items:center;font-size:23px}
-h1{font-size:18px;margin:0}
-small,.muted,.hint{color:var(--muted)}
-nav{display:flex;overflow-x:auto;background:#111c30;border-bottom:1px solid var(--border);padding:0 12px;gap:4px}
-.tab{background:transparent;color:var(--muted);border:0;border-radius:0;padding:15px;white-space:nowrap;border-bottom:3px solid transparent}
-.tab.active{color:#93c5fd;border-color:var(--blue);background:#1d3557}
-main{max-width:1550px;margin:22px auto;padding:0 16px 50px}
-.panel{display:none}
-.panel.active{display:block}
-.card,.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px;margin-bottom:16px}
-.card h2{font-size:17px;margin:0 0 15px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.field{display:flex;flex-direction:column;gap:6px}
-label{font-size:11px;color:var(--muted);font-weight:bold;text-transform:uppercase}
-input,select,textarea{width:100%;background:var(--input);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px;font:inherit}
-textarea{min-height:85px}
-input:focus,select:focus,textarea:focus{outline:2px solid #3b82f655;border-color:var(--blue)}
-button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;background:#263954;color:white;font-weight:bold}
-button:hover{filter:brightness(1.15)}
-button:disabled{opacity:.4;cursor:not-allowed}
-.primary{background:var(--blue)}
-.success{background:#087f5b}
-.danger{background:#7f1d1d}
-.ghost{background:transparent;border:1px solid var(--border)}
-.actions,.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-.grow{flex:1 1 220px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:16px}
-.stat strong{display:block;font-size:26px;margin-top:7px}
-.stat span{font-size:12px;color:var(--muted)}
-.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:9px;max-height:650px}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+header{
+  padding:22px 28px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;flex-wrap:wrap;background:#0d1523;
+}
+.brand{font-size:21px;font-weight:800}
+.brand span{color:var(--blue)}
+.subtitle{font-size:12px;color:var(--muted);margin-top:5px}
+.container{max-width:1500px;margin:auto;padding:24px}
+nav{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px}
+nav button,.btn{
+  background:var(--panel2);color:var(--text);
+  border:1px solid var(--line);border-radius:9px;
+  padding:11px 15px;cursor:pointer;font-weight:700;
+}
+nav button.active,.btn.primary{background:var(--blue);border-color:var(--blue);color:white}
+.btn.green{background:#087d58;border-color:#087d58}
+.btn.red{background:#8e2936;border-color:#8e2936}
+.btn.yellow{background:#755719;border-color:#755719}
+button:hover{filter:brightness(1.12)}
+.page{display:none}
+.page.active{display:block}
+h2{font-size:21px;margin:0 0 7px}
+.description{color:var(--muted);font-size:13px;margin-bottom:20px}
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:14px;margin:20px 0;
+}
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:13px;padding:18px;
+}
+.card small{color:var(--muted)}
+.metric{font-size:28px;font-weight:800;margin-top:9px}
+.panel{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:13px;padding:20px;margin-bottom:18px;
+}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select,textarea{
+  background:#0a1321;color:var(--text);
+  border:1px solid var(--line);border-radius:8px;
+  padding:12px;font-size:14px;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+input[type="text"],input[type="search"]{flex:1;min-width:190px}
+input[type="file"]{max-width:100%}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:7px}
+.field{flex:1;min-width:190px}
+.table-wrap{overflow:auto;margin-top:15px}
 table{width:100%;border-collapse:collapse;min-width:950px;font-size:12px}
-th,td{padding:11px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
-th{background:#192943;color:#a9bad0;text-transform:uppercase;font-size:10px;position:sticky;top:0;z-index:2}
-tr:hover td{background:#ffffff08}
-.empty{text-align:center;padding:25px;color:var(--muted)}
-.notice{padding:12px;background:#10243c;border:1px solid #36577e;border-radius:8px;margin:10px 0;color:#c8dcf5}
-.result{background:#0c192c;border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;overflow-wrap:anywhere}
-.result h3{margin-top:0}
-.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px}
-.result-grid div{background:#14243a;padding:12px;border-radius:7px;overflow-wrap:anywhere}
-.result-grid small{display:block}
-.result-grid b{display:block;margin-top:6px;white-space:normal}
-.upload{display:inline-flex;align-items:center;gap:7px;background:#0b1628;border:1px dashed #49617f;padding:9px;border-radius:8px;cursor:pointer;font-size:12px}
-.upload input{display:none}
-.upload.loaded{border-color:var(--green)}
-.scan-btn{background:#075985;white-space:nowrap}
-.scan-modal{display:none;position:fixed;inset:0;z-index:9999;background:#050b16f5;padding:15px;align-items:center;justify-content:center}
-.scan-box{width:100%;max-width:550px;background:#131f33;border:1px solid #2b3b54;border-radius:14px;padding:16px}
-.scan-video{width:100%;max-height:60vh;background:#000;border-radius:10px;object-fit:contain}
-.scan-status{padding:12px;background:#10243c;border:1px solid #36577e;border-radius:8px;margin-top:12px;color:#c8dcf5}
-.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#173c34;color:#6ee7b7;font-size:11px}
-.pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}
-footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
-@media(max-width:600px){
-header{padding:12px}
-.brand h1{font-size:15px}
-main{padding:0 10px 35px;margin-top:13px}
-.card{padding:13px}
-.tab{padding:12px 10px;font-size:12px}
-.stats{grid-template-columns:repeat(2,1fr)}
-.scan-btn{padding:11px 10px}
+th,td{
+  padding:12px 10px;text-align:left;border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+th{color:#9fb9df;background:#142137;position:sticky;top:0}
+td{color:#e1e9f7}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.status{padding:5px 8px;border-radius:20px;background:#26364e;font-size:11px}
+.muted{color:var(--muted)}
+.result-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;margin-top:18px;
+}
+.result-item{
+  padding:13px;background:#0b1422;border:1px solid var(--line);
+  border-radius:9px;min-width:0;
+}
+.result-item small{display:block;color:var(--muted);margin-bottom:7px}
+.result-item strong{overflow-wrap:anywhere;font-size:13px}
+.notice{
+  border:1px solid #665329;background:#2a2313;color:#f4d58a;
+  padding:12px;border-radius:9px;font-size:12px;margin-top:12px;
+}
+.success{color:var(--green)}
+.error{color:var(--red)}
+#cameraModal{
+  display:none;position:fixed;inset:0;background:#000d;
+  z-index:1000;align-items:center;justify-content:center;padding:15px;
+}
+#cameraModal.open{display:flex}
+.camera-box{
+  width:min(600px,100%);background:var(--panel);
+  border:1px solid var(--line);border-radius:15px;padding:18px;
+}
+video{
+  width:100%;background:#000;border-radius:10px;
+  max-height:65vh;object-fit:cover;margin:12px 0;
+}
+.footer{color:var(--muted);font-size:11px;text-align:center;padding:25px}
+@media(max-width:650px){
+  header{padding:17px}
+  .container{padding:14px}
+  .panel{padding:14px}
+  nav button{flex:1}
+  .row .btn{flex:1}
 }
 </style>
 </head>
@@ -89,1083 +130,736 @@ main{padding:0 10px 35px;margin-top:13px}
 <body>
 
 <header>
- <div class="brand">
-  <div class="logo">⚡</div>
   <div>
-   <h1>Central de Medidores</h1>
-   <small>BI Equatorial • Consulta e rastreabilidade</small>
+    <div class="brand">CENTRAL DE <span>MEDIDORES</span></div>
+    <div class="subtitle">Protocolo & Rastreio — Controle de Metrologia</div>
   </div>
- </div>
-
- <div class="actions">
-  <label class="upload" id="biLabel">
-   📊 Importar BI Equatorial
-   <input type="file" id="biFile" accept=".xlsx,.xls,.csv">
-  </label>
-  <button class="ghost" id="exportBtn">Exportar backup</button>
- </div>
+  <div class="row">
+    <span class="status" id="statusSistema">Sistema iniciado</span>
+  </div>
 </header>
 
-<nav id="tabs">
- <button class="tab active" data-tab="visao">Visão Geral</button>
- <button class="tab" data-tab="devolucao">Devolução</button>
- <button class="tab" data-tab="consulta">Consulta / Rastreio</button>
- <button class="tab" data-tab="bases">Base BI Equatorial</button>
- <button class="tab" data-tab="relatorios">Relatórios</button>
+<main class="container">
+
+<nav>
+  <button class="active" data-page="inicio">Visão Geral</button>
+  <button data-page="devolucao">Devolução</button>
+  <button data-page="bases">Importar Bases</button>
+  <button data-page="movimentacoes">Movimentações</button>
 </nav>
 
-<main>
-
-<section class="panel active" id="visao">
-
- <div class="stats">
-  <div class="stat">
-   <span>Total de medidores no BI</span>
-   <strong id="sTotal">0</strong>
-  </div>
-  <div class="stat">
-   <span>Depósitos identificados</span>
-   <strong id="sDepositos">0</strong>
-  </div>
-  <div class="stat">
-   <span>Status de sistema</span>
-   <strong id="sStatus">0</strong>
-  </div>
-  <div class="stat">
-   <span>Movimentações locais</span>
-   <strong id="sMoves">0</strong>
-  </div>
- </div>
-
- <div class="card">
-  <h2>🔎 Consultar medidor</h2>
-  <div class="row">
-   <div class="field grow">
-    <label>Número de série</label>
-    <input id="searchSerial" placeholder="Digite o NUMERO_SERIE">
-   </div>
-   <button class="scan-btn" data-scan-target="searchSerial">📷 Câmera</button>
-   <button class="primary" id="searchBtn">Pesquisar</button>
-  </div>
-  <p class="hint">Pesquisa pelo NUMERO_SERIE do BI Equatorial. Zeros à esquerda são ignorados.</p>
-  <div id="searchResult"></div>
- </div>
-
- <div class="card">
-  <div class="row" style="justify-content:space-between">
-   <h2>📊 Visão geral do BI Equatorial</h2>
-   <span class="badge" id="biStatus">Aguardando importação</span>
-  </div>
+<!-- VISÃO GERAL -->
+<section class="page active" id="inicio">
+  <h2>Visão Geral</h2>
+  <div class="description">Consulte medidores individualmente ou visualize a base completa do BI Equatorial.</div>
 
   <div class="grid">
-   <div class="field">
-    <label>Pesquisar na base</label>
-    <input id="overviewFilter" placeholder="Número, depósito, usuário ou status...">
-   </div>
-   <div class="field">
-    <label>Filtrar depósito</label>
-    <select id="depositFilter">
-     <option value="">Todos os depósitos</option>
-    </select>
-   </div>
-   <div class="field">
-    <label>Filtrar status</label>
-    <select id="statusFilter">
-     <option value="">Todos os status</option>
-    </select>
-   </div>
+    <div class="card"><small>Medidores no BI</small><div class="metric" id="totalBI">0</div></div>
+    <div class="card"><small>Medidores na base SAP</small><div class="metric" id="totalSAP">0</div></div>
+    <div class="card"><small>Movimentações registradas</small><div class="metric" id="totalMov">0</div></div>
+    <div class="card"><small>Devoluções registradas</small><div class="metric" id="totalDev">0</div></div>
   </div>
 
-  <div class="actions" style="margin:12px 0">
-   <button class="primary" id="filterBtn">Aplicar filtros</button>
-   <button class="ghost" id="clearFilters">Limpar filtros</button>
-  </div>
-
-  <p class="hint" id="tableInfo">Nenhum registro carregado.</p>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>NUMERO_SERIE</th>
-      <th>DEPOSITO_ATUAL</th>
-      <th>STATUS_SISTEMA</th>
-      <th>STATUS_USUARIO</th>
-      <th>DATA_MOVIM</th>
-      <th>TEMPO_INTERVALO_RECEB_FINL</th>
-      <th>TEMPO_ULT_MOV_HOJE</th>
-      <th>USUARIO</th>
-     </tr>
-    </thead>
-    <tbody id="overviewBody">
-     <tr><td colspan="8" class="empty">Importe a planilha BI Equatorial.</td></tr>
-    </tbody>
-   </table>
-  </div>
-
-  <div class="pagination">
-   <button class="ghost" id="prevPage">← Anterior</button>
-   <span id="pageInfo" class="muted">Página 0</span>
-   <button class="ghost" id="nextPage">Próxima →</button>
-  </div>
- </div>
-
- <div class="card">
-  <h2>↕️ Últimas movimentações locais</h2>
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Data</th>
-      <th>Medidor</th>
-      <th>Tipo</th>
-      <th>Responsável</th>
-      <th>Origem</th>
-      <th>Detalhes</th>
-     </tr>
-    </thead>
-    <tbody id="recentBody"></tbody>
-   </table>
-  </div>
- </div>
-
-</section>
-
-<section class="panel" id="devolucao">
-
- <div class="card">
-  <h2>↩️ Registrar devolução</h2>
-
-  <div class="grid">
-   <div class="field">
-    <label>Número do medidor</label>
+  <div class="panel">
+    <h2>Consulta individual de medidor</h2>
+    <div class="description">Digite o número de série. Zeros à esquerda serão ignorados automaticamente.</div>
     <div class="row">
-     <input id="devSerial" placeholder="Número de série">
-     <button class="scan-btn" data-scan-target="devSerial">📷</button>
+      <input id="consultaSerial" type="text" placeholder="Digite o número do medidor..." autocomplete="off">
+      <button class="btn" onclick="abrirCamera('consultaSerial')">📷 Ler código</button>
+      <button class="btn primary" onclick="consultarMedidor()">Consultar</button>
     </div>
-   </div>
-   <div class="field">
-    <label>Data</label>
-    <input id="devDate" type="date">
-   </div>
-   <div class="field">
-    <label>Recebido por</label>
-    <input id="devPerson">
-   </div>
-   <div class="field">
-    <label>Origem / Devolvido por</label>
-    <input id="devOrigin">
-   </div>
-   <div class="field">
-    <label>Condição</label>
-    <select id="devCondition">
-     <option>Em triagem</option>
-     <option>Disponível</option>
-     <option>Sucata</option>
-     <option>Enviar para análise</option>
-    </select>
-   </div>
+    <div id="resultadoConsulta"></div>
   </div>
 
-  <div class="field" style="margin-top:12px">
-   <label>Observações</label>
-   <textarea id="devNotes"></textarea>
+  <div class="panel">
+    <h2>Visão geral do BI Equatorial</h2>
+    <div class="description">Todos os registros importados, com os oito campos solicitados.</div>
+    <div class="row">
+      <input id="filtroBI" type="search" placeholder="Pesquisar número, depósito, status ou usuário..." oninput="renderTabelaBI()">
+      <button class="btn" onclick="exportarBI()">Exportar CSV</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <span class="muted" id="contadorBI">Nenhum registro carregado</span>
+      <select id="limiteBI" onchange="renderTabelaBI()">
+        <option value="50">50 registros</option>
+        <option value="100">100 registros</option>
+        <option value="250">250 registros</option>
+        <option value="500">500 registros</option>
+        <option value="0">Todos os registros</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>NUMERO_SERIE</th>
+          <th>DEPOSITO_ATUAL</th>
+          <th>STATUS_SISTEMA</th>
+          <th>STATUS_USUARIO</th>
+          <th>DATA_MOVIM</th>
+          <th>TEMPO_INTERVALO_RECEB_FINL</th>
+          <th>TEMPO_ULT_MOV_HOJE</th>
+          <th>USUARIO</th>
+        </tr></thead>
+        <tbody id="tabelaBI">
+          <tr><td colspan="8" class="empty">Importe a planilha do BI Equatorial para visualizar os dados.</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <div class="actions" style="margin-top:13px">
-   <button class="success" id="saveDev">Registrar devolução</button>
-   <button class="ghost" id="clearDev">Limpar</button>
-  </div>
-
-  <div id="devLookup"></div>
- </div>
-
- <div class="card">
-  <h2>Histórico de devoluções</h2>
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Data</th>
-      <th>Medidor</th>
-      <th>Recebido por</th>
-      <th>Origem</th>
-      <th>Condição</th>
-      <th>Observações</th>
-     </tr>
-    </thead>
-    <tbody id="devBody"></tbody>
-   </table>
-  </div>
- </div>
-
 </section>
 
-<section class="panel" id="consulta">
- <div class="card">
-  <h2>🧭 Consulta e rastreabilidade</h2>
-  <div class="row">
-   <div class="field grow">
-    <label>Número de série</label>
-    <input id="traceSerial" placeholder="Digite ou leia o código">
-   </div>
-   <button class="scan-btn" data-scan-target="traceSerial">📷 Câmera</button>
-   <button class="primary" id="traceBtn">Consultar</button>
+<!-- DEVOLUÇÃO -->
+<section class="page" id="devolucao">
+  <h2>Devolução de medidores</h2>
+  <div class="description">Registre a devolução e mantenha o histórico no sistema.</div>
+  <div class="panel">
+    <div class="row">
+      <div class="field">
+        <label>Número do medidor</label>
+        <input id="devSerial" type="text" placeholder="Número de série">
+      </div>
+      <button class="btn" style="align-self:end" onclick="abrirCamera('devSerial')">📷 Ler código</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="field">
+        <label>Responsável</label>
+        <input id="devResponsavel" type="text" placeholder="Nome do responsável">
+      </div>
+      <div class="field">
+        <label>Destino / observação</label>
+        <input id="devObs" type="text" placeholder="Ex.: Devolvido para Mara">
+      </div>
+    </div>
+    <button class="btn primary" style="margin-top:15px" onclick="registrarDevolucao()">Registrar devolução</button>
   </div>
-  <div id="traceResult"></div>
- </div>
+  <div class="panel">
+    <h2>Histórico de devoluções</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Data</th><th>Medidor</th><th>Responsável</th><th>Observação</th></tr></thead>
+        <tbody id="tabelaDevolucoes"></tbody>
+      </table>
+    </div>
+  </div>
 </section>
 
-<section class="panel" id="bases">
- <div class="card">
-  <h2>📚 Base de dados BI Equatorial</h2>
-
-  <div class="notice">
-   Importe o arquivo exportado do BI Equatorial.
-   A planilha alimenta a Visão Geral e as consultas.
-   Os dados ficam armazenados neste navegador.
+<!-- IMPORTAÇÃO -->
+<section class="page" id="bases">
+  <h2>Importação de bases</h2>
+  <div class="description">Importe as planilhas do BI Equatorial e SAP. Os dados ficam salvos neste navegador.</div>
+  <div class="panel">
+    <h2>BI Equatorial</h2>
+    <p class="muted">Importe a planilha que contém NUMERO_SERIE e os campos de situação do medidor.</p>
+    <div class="row">
+      <input type="file" id="arquivoBI" accept=".xlsx,.xls,.csv">
+      <button class="btn primary" onclick="importarBI()">Importar BI</button>
+    </div>
+    <p id="msgBI" class="muted"></p>
   </div>
-
-  <label class="upload" id="biLabel2">
-   📊 Selecionar planilha BI
-   <input type="file" id="biFile2" accept=".xlsx,.xls,.csv">
-  </label>
-
-  <div class="stats" style="margin-top:15px">
-   <div class="stat"><span>Registros importados</span><strong id="biCount">0</strong></div>
-   <div class="stat"><span>Números de série únicos</span><strong id="uniqueCount">0</strong></div>
-   <div class="stat"><span>Movimentações locais</span><strong id="moveCount">0</strong></div>
+  <div class="panel">
+    <h2>Base SAP</h2>
+    <p class="muted">Importe sua planilha SAP para manter os dados disponíveis no sistema.</p>
+    <div class="row">
+      <input type="file" id="arquivoSAP" accept=".xlsx,.xls,.csv">
+      <button class="btn primary" onclick="importarSAP()">Importar SAP</button>
+    </div>
+    <p id="msgSAP" class="muted"></p>
   </div>
-
-  <div class="actions">
-   <button class="ghost" id="clearBI">Limpar BI</button>
-   <button class="ghost" id="exportBI">Exportar BI CSV</button>
+  <div class="panel">
+    <h2>Backup do sistema</h2>
+    <div class="row">
+      <button class="btn green" onclick="baixarBackup()">Baixar backup JSON</button>
+      <input type="file" id="arquivoBackup" accept=".json">
+      <button class="btn" onclick="restaurarBackup()">Restaurar backup</button>
+    </div>
+    <div class="notice">Os dados são armazenados no navegador deste dispositivo. Faça backups periódicos para evitar perdas.</div>
+    <button class="btn red" style="margin-top:15px" onclick="limparBases()">Limpar todas as bases e registros</button>
   </div>
-
-  <p class="hint">
-   Colunas: NUMERO_SERIE, DEPOSITO_ATUAL, STATUS_SISTEMA,
-   STATUS_USUARIO, DATA_MOVIM, TEMPO_INTERVALO_RECEB_FINL,
-   TEMPO_ULT_MOV_HOJE e USUARIO.
-  </p>
- </div>
-
- <div class="card">
-  <h2>Prévia da planilha importada</h2>
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>NUMERO_SERIE</th>
-      <th>DEPOSITO_ATUAL</th>
-      <th>STATUS_SISTEMA</th>
-      <th>STATUS_USUARIO</th>
-      <th>DATA_MOVIM</th>
-      <th>TEMPO_INTERVALO_RECEB_FINL</th>
-      <th>TEMPO_ULT_MOV_HOJE</th>
-      <th>USUARIO</th>
-     </tr>
-    </thead>
-    <tbody id="biPreview"></tbody>
-   </table>
-  </div>
- </div>
 </section>
 
-<section class="panel" id="relatorios">
- <div class="card">
-  <h2>📈 Relatórios de devoluções</h2>
-
-  <div class="grid">
-   <div class="field">
-    <label>Pesquisar</label>
-    <input id="reportFilter" placeholder="Medidor, responsável ou origem">
-   </div>
-   <div class="field">
-    <label>Condição</label>
-    <select id="reportCondition">
-     <option value="">Todas</option>
-     <option>Em triagem</option>
-     <option>Disponível</option>
-     <option>Sucata</option>
-     <option>Enviar para análise</option>
-    </select>
-   </div>
+<!-- MOVIMENTAÇÕES -->
+<section class="page" id="movimentacoes">
+  <h2>Movimentações</h2>
+  <div class="description">Registro manual de movimentações de medidores.</div>
+  <div class="panel">
+    <div class="row">
+      <div class="field">
+        <label>Número do medidor</label>
+        <input id="movSerial" type="text" placeholder="Número de série">
+      </div>
+      <button class="btn" style="align-self:end" onclick="abrirCamera('movSerial')">📷 Ler código</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="field">
+        <label>Tipo de movimentação</label>
+        <select id="movTipo">
+          <option>Entrada</option>
+          <option>Saída</option>
+          <option>Transferência</option>
+          <option>Conferência</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Responsável</label>
+        <input id="movResponsavel" type="text" placeholder="Responsável">
+      </div>
+      <div class="field">
+        <label>Observação</label>
+        <input id="movObs" type="text" placeholder="Observação">
+      </div>
+    </div>
+    <button class="btn primary" style="margin-top:15px" onclick="registrarMovimentacao()">Salvar movimentação</button>
   </div>
-
-  <div class="actions" style="margin:12px 0">
-   <button class="primary" id="reportBtn">Aplicar filtros</button>
-   <button class="ghost" id="reportCsv">Baixar CSV</button>
+  <div class="panel">
+    <h2>Histórico</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Data</th><th>Medidor</th><th>Tipo</th><th>Responsável</th><th>Observação</th></tr></thead>
+        <tbody id="tabelaMovimentacoes"></tbody>
+      </table>
+    </div>
   </div>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Data</th>
-      <th>Medidor</th>
-      <th>Responsável</th>
-      <th>Origem</th>
-      <th>Condição</th>
-      <th>Detalhes</th>
-     </tr>
-    </thead>
-    <tbody id="reportBody"></tbody>
-   </table>
-  </div>
- </div>
 </section>
 
+<div class="footer">Central de Medidores — Protocolo & Rastreio</div>
 </main>
 
-<div class="scan-modal" id="scannerModal">
- <div class="scan-box">
-  <div class="row" style="justify-content:space-between">
-   <h2 style="margin:0">📷 Leitor de medidores</h2>
-   <button type="button" id="closeScanner" class="danger">Fechar ✕</button>
+<!-- MODAL DA CÂMERA -->
+<div id="cameraModal">
+  <div class="camera-box">
+    <div class="row" style="justify-content:space-between">
+      <h2>Leitor de código de barras</h2>
+      <button class="btn red" onclick="fecharCamera()">Fechar ✕</button>
+    </div>
+    <p class="muted">Aponte a câmera para o código de barras do medidor.</p>
+    <video id="cameraVideo" muted playsinline></video>
+    <div id="cameraStatus" class="muted">Preparando câmera...</div>
+    <div class="notice">Se a câmera não abrir, permita o acesso no navegador e confira se o site está em HTTPS.</div>
   </div>
-  <p class="hint">Posicione o código de barras dentro da imagem.</p>
-  <video id="scannerVideo" class="scan-video" autoplay muted playsinline></video>
-  <div class="scan-status" id="scannerStatus">Aguardando câmera...</div>
- </div>
 </div>
 
-<footer>
- Central de Medidores • BI Equatorial • Faça backups periódicos.
-</footer>
-
 <script>
-(() => {
-'use strict';
+/* ==============================
+   BANCO DE DADOS LOCAL
+============================== */
+const STORAGE_KEY = "central_medidores_v3";
 
-const $ = id => document.getElementById(id);
-const KEY = 'central_medidores_equatorial_v4';
+let db = {
+  bi: [],
+  sap: [],
+  moves: [],
+  devolucoes: []
+};
 
-const COLUMNS = [
- 'NUMERO_SERIE',
- 'DEPOSITO_ATUAL',
- 'STATUS_SISTEMA',
- 'STATUS_USUARIO',
- 'DATA_MOVIM',
- 'TEMPO_INTERVALO_RECEB_FINL',
- 'TEMPO_ULT_MOV_HOJE',
- 'USUARIO'
+let cameraControls = null;
+let cameraTarget = null;
+let scanDetected = false;
+
+function carregarBanco(){
+  try{
+    const salvo = localStorage.getItem(STORAGE_KEY);
+    if(salvo){
+      const dados = JSON.parse(salvo);
+      db = {
+        bi:Array.isArray(dados.bi)?dados.bi:[],
+        sap:Array.isArray(dados.sap)?dados.sap:[],
+        moves:Array.isArray(dados.moves)?dados.moves:[],
+        devolucoes:Array.isArray(dados.devolucoes)?dados.devolucoes:[]
+      };
+    }
+  }catch(e){
+    console.error("Erro ao carregar banco:",e);
+  }
+  atualizarTudo();
+}
+
+function salvarBanco(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(db));
+    atualizarIndicadores();
+  }catch(e){
+    alert("Não foi possível salvar. O armazenamento do navegador pode estar cheio.");
+  }
+}
+
+/* ==============================
+   NAVEGAÇÃO
+============================== */
+document.querySelectorAll("nav button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.page).classList.add("active");
+  });
+});
+
+/* ==============================
+   NORMALIZAÇÃO DE DADOS
+============================== */
+function normalizarCabecalho(valor){
+  return String(valor??"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
+function normalizarSerial(valor){
+  let s=String(valor??"").trim().replace(/\D/g,"");
+  s=s.replace(/^0+/,"");
+  return s || (String(valor??"").replace(/\D/g,"") ? "0" : "");
+}
+
+function localizarCampo(obj,nomes){
+  const chaves=Object.keys(obj||{});
+  for(const nome of nomes){
+    const alvo=normalizarCabecalho(nome);
+    const chave=chaves.find(k=>normalizarCabecalho(k)===alvo);
+    if(chave!==undefined) return obj[chave]??"";
+  }
+  return "";
+}
+
+const CAMPOS_BI=[
+  {key:"NUMERO_SERIE",aliases:["NUMERO_SERIE","NUMERO SERIE","NÚMERO DE SÉRIE","MEDIDOR","SERIAL"]},
+  {key:"DEPOSITO_ATUAL",aliases:["DEPOSITO_ATUAL","DEPOSITO ATUAL"]},
+  {key:"STATUS_SISTEMA",aliases:["STATUS_SISTEMA","STATUS SISTEMA"]},
+  {key:"STATUS_USUARIO",aliases:["STATUS_USUARIO","STATUS USUARIO"]},
+  {key:"DATA_MOVIM",aliases:["DATA_MOVIM","DATA MOVIM"]},
+  {key:"TEMPO_INTERVALO_RECEB_FINL",aliases:["TEMPO_INTERVALO_RECEB_FINL","TEMPO INTERVALO RECEB FINL"]},
+  {key:"TEMPO_ULT_MOV_HOJE",aliases:["TEMPO_ULT_MOV_HOJE","TEMPO ULT MOV HOJE"]},
+  {key:"USUARIO",aliases:["USUARIO","USUÁRIO"]}
 ];
 
-const today = () => {
- const d = new Date();
- return new Date(d.getTime()-d.getTimezoneOffset()*60000)
-  .toISOString().slice(0,10);
-};
-
-let state = {bi:[],moves:[]};
-let page = 1;
-const pageSize = 50;
-
-const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({
- '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-}[c]));
-
-/* NORMALIZAÇÃO DOS NÚMEROS DE SÉRIE
-   Ignora TODOS os zeros à esquerda.
-   Exemplo:
-   37060073415
-   037060073415
-   000037060073415
-   Os três viram 37060073415.
-*/
-
-function normalizeSerial(value){
- return String(value ?? '')
-  .trim()
-  .replace(/\s+/g,'')
-  .replace(/^0+/,'')
-  .toUpperCase();
+function valorBI(linha,key){
+  const campo=CAMPOS_BI.find(c=>c.key===key);
+  if(!campo)return "";
+  return localizarCampo(linha,campo.aliases);
 }
 
-function normalizeHeader(value){
- return String(value ?? '')
-  .replace(/^\uFEFF/,'')
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g,'')
-  .trim()
-  .toUpperCase()
-  .replace(/[^A-Z0-9]+/g,'_')
-  .replace(/^_|_$/g,'');
+function serialBI(linha){
+  return normalizarSerial(valorBI(linha,"NUMERO_SERIE"));
 }
 
-function load(){
- try{
-  const raw=localStorage.getItem(KEY);
-  if(raw){
-   const data=JSON.parse(raw);
-   state={
-    bi:Array.isArray(data.bi)?data.bi:[],
-    moves:Array.isArray(data.moves)?data.moves:[]
-   };
-  }
- }catch(e){
-  console.error(e);
-  alert('Não foi possível recuperar os dados salvos.');
- }
-}
-
-function save(){
- try{
-  localStorage.setItem(KEY,JSON.stringify(state));
- }catch(e){
-  alert('Armazenamento cheio. Exporte um backup.');
- }
-}
-
-function showTab(name){
- const panel=$(name);
- if(!panel)return;
-
- document.querySelectorAll('.tab').forEach(b=>{
-  b.classList.toggle('active',b.dataset.tab===name);
- });
-
- document.querySelectorAll('.panel').forEach(p=>{
-  p.classList.toggle('active',p.id===name);
- });
-
- try{
-  sessionStorage.setItem('central_active_tab',name);
- }catch(e){}
-}
-
-$('tabs').addEventListener('click',e=>{
- const button=e.target.closest('[data-tab]');
- if(button)showTab(button.dataset.tab);
-});
-
-/* BUSCA DO MEDIDOR */
-
-function getSerial(row){
- return row?.NUMERO_SERIE ?? '';
-}
-
-function findMeter(serial){
- const target=normalizeSerial(serial);
- if(!target)return [];
-
- return state.bi.filter(row=>
-  normalizeSerial(getSerial(row))===target
- );
-}
-
-/* ESTATÍSTICAS */
-
-function renderStats(){
- const deposits=new Set(
-  state.bi.map(r=>String(r.DEPOSITO_ATUAL??'').trim()).filter(Boolean)
- );
-
- const statuses=new Set(
-  state.bi.map(r=>String(r.STATUS_SISTEMA??'').trim()).filter(Boolean)
- );
-
- const unique=new Set(
-  state.bi.map(r=>normalizeSerial(getSerial(r))).filter(Boolean)
- );
-
- $('sTotal').textContent=state.bi.length;
- $('sDepositos').textContent=deposits.size;
- $('sStatus').textContent=statuses.size;
- $('sMoves').textContent=state.moves.length;
-
- $('biCount').textContent=state.bi.length;
- $('uniqueCount').textContent=unique.size;
- $('moveCount').textContent=state.moves.length;
-
- $('biStatus').textContent=state.bi.length?'BI carregado':'Aguardando importação';
-
- $('biLabel').classList.toggle('loaded',state.bi.length>0);
- $('biLabel2').classList.toggle('loaded',state.bi.length>0);
-}
-
-/* FILTROS */
-
-function fillFilters(){
- const deposits=[...new Set(
-  state.bi.map(r=>String(r.DEPOSITO_ATUAL??'').trim()).filter(Boolean)
- )].sort();
-
- const statuses=[...new Set(
-  state.bi.map(r=>String(r.STATUS_SISTEMA??'').trim()).filter(Boolean)
- )].sort();
-
- const currentDeposit=$('depositFilter').value;
- const currentStatus=$('statusFilter').value;
-
- $('depositFilter').innerHTML=
-  '<option value="">Todos os depósitos</option>'+
-  deposits.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
-
- $('statusFilter').innerHTML=
-  '<option value="">Todos os status</option>'+
-  statuses.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
-
- if(deposits.includes(currentDeposit))$('depositFilter').value=currentDeposit;
- if(statuses.includes(currentStatus))$('statusFilter').value=currentStatus;
-}
-
-function filteredBI(){
- const q=$('overviewFilter').value.trim();
- const deposit=$('depositFilter').value;
- const status=$('statusFilter').value;
-
- return state.bi.filter(row=>{
-  const matchesText=!q||COLUMNS.some(col=>{
-   if(col==='NUMERO_SERIE'){
-    return normalizeSerial(row[col]).includes(normalizeSerial(q));
-   }
-   return String(row[col]??'').toUpperCase().includes(q.toUpperCase());
+/* ==============================
+   LEITURA DE PLANILHAS
+============================== */
+function lerArquivo(file){
+  return new Promise((resolve,reject)=>{
+    if(!file){reject(new Error("Selecione um arquivo."));return;}
+    if(!window.XLSX){reject(new Error("Biblioteca XLSX não carregou. Atualize a página."));return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const bytes=new Uint8Array(e.target.result);
+        const workbook=XLSX.read(bytes,{type:"array",cellDates:false});
+        const sheet=workbook.Sheets[workbook.SheetNames[0]];
+        const dados=XLSX.utils.sheet_to_json(sheet,{defval:"",raw:false});
+        resolve(dados);
+      }catch(err){reject(err);}
+    };
+    reader.onerror=()=>reject(new Error("Falha ao ler o arquivo."));
+    reader.readAsArrayBuffer(file);
   });
-
-  const matchesDeposit=!deposit||String(row.DEPOSITO_ATUAL??'')===deposit;
-  const matchesStatus=!status||String(row.STATUS_SISTEMA??'')===status;
-
-  return matchesText&&matchesDeposit&&matchesStatus;
- });
 }
 
-/* TABELA GERAL */
-
-function renderOverview(){
- const rows=filteredBI();
- const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
-
- if(page>totalPages)page=totalPages;
- if(page<1)page=1;
-
- const start=(page-1)*pageSize;
- const visible=rows.slice(start,start+pageSize);
-
- $('overviewBody').innerHTML=visible.map(row=>
-  '<tr>'+
-  COLUMNS.map(col=>`<td>${esc(row[col])}</td>`).join('')+
-  '</tr>'
- ).join('')||'<tr><td colspan="8" class="empty">Nenhum medidor encontrado.</td></tr>';
-
- $('tableInfo').textContent=
-  `Exibindo ${visible.length} de ${rows.length} registros filtrados. Total na base: ${state.bi.length}.`;
-
- $('pageInfo').textContent=`Página ${page} de ${totalPages}`;
- $('prevPage').disabled=page<=1;
- $('nextPage').disabled=page>=totalPages;
-}
-
-$('filterBtn').onclick=()=>{
- page=1;
- renderOverview();
-};
-
-$('overviewFilter').addEventListener('keydown',e=>{
- if(e.key==='Enter'){
-  page=1;
-  renderOverview();
- }
-});
-
-$('depositFilter').onchange=()=>{
- page=1;
- renderOverview();
-};
-
-$('statusFilter').onchange=()=>{
- page=1;
- renderOverview();
-};
-
-$('prevPage').onclick=()=>{
- if(page>1){
-  page--;
-  renderOverview();
- }
-};
-
-$('nextPage').onclick=()=>{
- page++;
- renderOverview();
-};
-
-$('clearFilters').onclick=()=>{
- $('overviewFilter').value='';
- $('depositFilter').value='';
- $('statusFilter').value='';
- page=1;
- renderOverview();
-};
-
-/* RESULTADO DA CONSULTA */
-
-function resultHTML(serial){
- if(!String(serial).trim()){
-  return '<div class="notice">Digite o número de série.</div>';
- }
-
- const rows=findMeter(serial);
-
- if(!rows.length){
-  return '<div class="notice">Medidor não encontrado no BI Equatorial. Confira o número ou importe uma planilha atualizada.</div>';
- }
-
- let html='';
-
- rows.forEach((row,index)=>{
-  html+=`
-   <div class="result">
-    <h3>Medidor: ${esc(getSerial(row))}</h3>
-    <p class="hint">Registro ${index+1} de ${rows.length}</p>
-    <div class="result-grid">
-     ${COLUMNS.map(col=>`
-      <div>
-       <small>${esc(col)}</small>
-       <b>${esc(row[col])||'Não informado'}</b>
-      </div>
-     `).join('')}
-    </div>
-   </div>
-  `;
- });
-
- const moves=state.moves.filter(m=>
-  normalizeSerial(m.serial)===normalizeSerial(serial)
- );
-
- if(moves.length){
-  html+='<div class="result"><h3>Histórico de movimentações locais</h3>';
-  html+='<div class="table-wrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Responsável</th><th>Origem</th><th>Detalhes</th></tr></thead><tbody>';
-
-  html+=moves.map(m=>`
-   <tr>
-    <td>${esc(m.date)}</td>
-    <td>${esc(m.type)}</td>
-    <td>${esc(m.person)}</td>
-    <td>${esc(m.origin)}</td>
-    <td>${esc(m.details)}</td>
-   </tr>
-  `).join('');
-
-  html+='</tbody></table></div></div>';
- }
-
- return html;
-}
-
-$('searchBtn').onclick=()=>{
- $('searchResult').innerHTML=resultHTML($('searchSerial').value);
-};
-
-$('searchSerial').addEventListener('keydown',e=>{
- if(e.key==='Enter')$('searchBtn').click();
-});
-
-$('traceBtn').onclick=()=>{
- $('traceResult').innerHTML=resultHTML($('traceSerial').value);
-};
-
-$('traceSerial').addEventListener('keydown',e=>{
- if(e.key==='Enter')$('traceBtn').click();
-});
-
-/* DEVOLUÇÃO */
-
-function clearDev(){
- ['devSerial','devPerson','devOrigin','devNotes'].forEach(id=>{
-  $(id).value='';
- });
- $('devCondition').value='Em triagem';
- $('devDate').value=today();
- $('devLookup').innerHTML='';
-}
-
-$('saveDev').onclick=()=>{
- const serial=$('devSerial').value.trim();
- const person=$('devPerson').value.trim();
-
- if(!serial)return alert('Informe o número do medidor.');
- if(!person)return alert('Informe quem recebeu o medidor.');
-
- state.moves.unshift({
-  type:'Devolução',
-  serial,
-  person,
-  origin:$('devOrigin').value.trim(),
-  condition:$('devCondition').value,
-  details:$('devNotes').value.trim(),
-  date:$('devDate').value||today(),
-  time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
- });
-
- save();
- render();
- alert('Devolução registrada.');
- clearDev();
-};
-
-$('clearDev').onclick=clearDev;
-
-$('devSerial').addEventListener('change',()=>{
- const serial=$('devSerial').value.trim();
- if(serial)$('devLookup').innerHTML=resultHTML(serial);
-});
-
-function renderDevolutions(){
- const rows=state.moves.filter(m=>m.type==='Devolução');
-
- $('devBody').innerHTML=rows.map(m=>`
-  <tr>
-   <td>${esc(m.date)}</td>
-   <td>${esc(m.serial)}</td>
-   <td>${esc(m.person)}</td>
-   <td>${esc(m.origin)}</td>
-   <td>${esc(m.condition)}</td>
-   <td>${esc(m.details)}</td>
-  </tr>
- `).join('')||'<tr><td colspan="6" class="empty">Nenhuma devolução registrada.</td></tr>';
-}
-
-function renderRecent(){
- $('recentBody').innerHTML=state.moves.slice(0,15).map(m=>`
-  <tr>
-   <td>${esc(m.date)} ${esc(m.time)}</td>
-   <td>${esc(m.serial)}</td>
-   <td>${esc(m.type)}</td>
-   <td>${esc(m.person)}</td>
-   <td>${esc(m.origin)}</td>
-   <td>${esc(m.details)}</td>
-  </tr>
- `).join('')||'<tr><td colspan="6" class="empty">Nenhuma movimentação.</td></tr>';
-}
-
-/* IMPORTAÇÃO DO BI */
-
-function mapBI(rows){
- return rows.map(original=>{
-  const normalized={};
-
-  Object.entries(original).forEach(([key,value])=>{
-   normalized[normalizeHeader(key)]=value;
-  });
-
-  const row={};
-  COLUMNS.forEach(col=>{
-   row[col]=normalized[col]??'';
-  });
-
-  return row;
- }).filter(row=>normalizeSerial(row.NUMERO_SERIE));
-}
-
-function readBI(file){
- if(!file)return;
-
- const reader=new FileReader();
-
- reader.onload=e=>{
+async function importarBI(){
+  const file=document.getElementById("arquivoBI").files[0];
+  const msg=document.getElementById("msgBI");
+  msg.textContent="Importando...";
   try{
-   if(!window.XLSX){
-    throw new Error('Biblioteca Excel não carregada. Verifique sua internet.');
-   }
+    const dados=await lerArquivo(file);
+    if(!dados.length) throw new Error("A planilha está vazia.");
 
-   const workbook=XLSX.read(e.target.result,{
-    type:'array',
-    cellDates:false
-   });
+    const primeira=dados[0];
+    const coluna=Object.keys(primeira).find(k=>
+      CAMPOS_BI[0].aliases.some(a=>normalizarCabecalho(a)===normalizarCabecalho(k))
+    );
+    if(!coluna) throw new Error("Não encontrei a coluna NUMERO_SERIE. Confira o cabeçalho da planilha.");
 
-   const sheet=workbook.Sheets[workbook.SheetNames[0]];
-   if(!sheet)throw new Error('Planilha não encontrada.');
-
-   const rawRows=XLSX.utils.sheet_to_json(sheet,{
-    defval:'',
-    raw:false
-   });
-
-   if(!rawRows.length)throw new Error('A planilha está vazia.');
-
-   const headers=Object.keys(rawRows[0]).map(normalizeHeader);
-
-   if(!headers.includes('NUMERO_SERIE')){
-    throw new Error('A coluna NUMERO_SERIE não foi encontrada. Confira o cabeçalho da planilha.');
-   }
-
-   const data=mapBI(rawRows);
-
-   if(!data.length){
-    throw new Error('Nenhum medidor válido encontrado na planilha.');
-   }
-
-   state.bi=data;
-   save();
-   page=1;
-   render();
-
-   alert('BI Equatorial importado com sucesso!\n\n'+data.length+' medidores carregados.');
-
-  }catch(error){
-   console.error(error);
-   alert('Erro na importação:\n'+error.message);
+    db.bi=dados.filter(linha=>serialBI(linha)!=="");
+    salvarBanco();
+    renderTabelaBI();
+    msg.innerHTML='<span class="success">Importação concluída: '+db.bi.length+' medidores carregados.</span>';
+    document.getElementById("arquivoBI").value="";
+  }catch(err){
+    msg.innerHTML='<span class="error">'+escaparHTML(err.message)+'</span>';
   }
- };
-
- reader.onerror=()=>{
-  alert('Não foi possível ler o arquivo.');
- };
-
- reader.readAsArrayBuffer(file);
 }
 
-['biFile','biFile2'].forEach(id=>{
- $(id).addEventListener('change',e=>{
-  readBI(e.target.files[0]);
-  e.target.value='';
- });
+async function importarSAP(){
+  const file=document.getElementById("arquivoSAP").files[0];
+  const msg=document.getElementById("msgSAP");
+  msg.textContent="Importando...";
+  try{
+    const dados=await lerArquivo(file);
+    db.sap=dados;
+    salvarBanco();
+    msg.innerHTML='<span class="success">SAP importado: '+dados.length+' registros.</span>';
+    document.getElementById("arquivoSAP").value="";
+  }catch(err){
+    msg.innerHTML='<span class="error">'+escaparHTML(err.message)+'</span>';
+  }
+}
+
+/* ==============================
+   CONSULTA INDIVIDUAL
+============================== */
+function consultarMedidor(){
+  const digitado=document.getElementById("consultaSerial").value;
+  const serial=normalizarSerial(digitado);
+  const area=document.getElementById("resultadoConsulta");
+
+  if(!serial){
+    area.innerHTML='<p class="error">Digite um número de série válido.</p>';
+    return;
+  }
+
+  const encontrados=db.bi.filter(linha=>serialBI(linha)===serial);
+
+  if(!encontrados.length){
+    area.innerHTML='<div class="notice">Nenhum medidor encontrado no BI Equatorial com o número '+escaparHTML(digitado)+'. Confira se a base foi importada corretamente.</div>';
+    return;
+  }
+
+  area.innerHTML=encontrados.map((linha,index)=>`
+    <div class="panel" style="margin-top:15px">
+      <div class="row" style="justify-content:space-between">
+        <h2>Resultado ${index+1}</h2>
+        <span class="status success">Encontrado no BI</span>
+      </div>
+      <div class="result-grid">
+        ${CAMPOS_BI.map(c=>`
+          <div class="result-item">
+            <small>${escaparHTML(c.key)}</small>
+            <strong>${escaparHTML(valorBI(linha,c.key)||"—")}</strong>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ==============================
+   TABELA GERAL DO BI
+============================== */
+function renderTabelaBI(){
+  const tbody=document.getElementById("tabelaBI");
+  const filtro=(document.getElementById("filtroBI").value||"").toLowerCase().trim();
+  const limite=Number(document.getElementById("limiteBI").value);
+
+  const filtrados=db.bi.filter(linha=>{
+    if(!filtro)return true;
+    return CAMPOS_BI.some(c=>
+      String(valorBI(linha,c.key)).toLowerCase().includes(filtro)
+    ) || serialBI(linha).includes(normalizarSerial(filtro));
+  });
+
+  document.getElementById("contadorBI").textContent=
+    filtrados.length+" registro(s) encontrado(s) de "+db.bi.length;
+
+  const exibidos=limite>0?filtrados.slice(0,limite):filtrados;
+
+  if(!exibidos.length){
+    tbody.innerHTML='<tr><td colspan="8" class="empty">Nenhum registro encontrado.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML=exibidos.map(linha=>`
+    <tr>
+      ${CAMPOS_BI.map(c=>`<td>${escaparHTML(valorBI(linha,c.key)||"")}</td>`).join("")}
+    </tr>
+  `).join("");
+}
+
+/* ==============================
+   DEVOLUÇÕES
+============================== */
+function registrarDevolucao(){
+  const serial=document.getElementById("devSerial").value.trim();
+  const responsavel=document.getElementById("devResponsavel").value.trim();
+  const obs=document.getElementById("devObs").value.trim();
+
+  if(!serial){alert("Informe o número do medidor.");return;}
+
+  db.devolucoes.unshift({
+    data:new Date().toLocaleString("pt-BR"),
+    serial,
+    responsavel,
+    obs
+  });
+  salvarBanco();
+  renderDevolucoes();
+
+  document.getElementById("devSerial").value="";
+  document.getElementById("devResponsavel").value="";
+  document.getElementById("devObs").value="";
+  alert("Devolução registrada.");
+}
+
+function renderDevolucoes(){
+  const tbody=document.getElementById("tabelaDevolucoes");
+  if(!db.devolucoes.length){
+    tbody.innerHTML='<tr><td colspan="4" class="empty">Nenhuma devolução registrada.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=db.devolucoes.map(d=>`
+    <tr><td>${escaparHTML(d.data)}</td><td>${escaparHTML(d.serial)}</td>
+    <td>${escaparHTML(d.responsavel)}</td><td>${escaparHTML(d.obs)}</td></tr>
+  `).join("");
+}
+
+/* ==============================
+   MOVIMENTAÇÕES
+============================== */
+function registrarMovimentacao(){
+  const serial=document.getElementById("movSerial").value.trim();
+  const tipo=document.getElementById("movTipo").value;
+  const responsavel=document.getElementById("movResponsavel").value.trim();
+  const obs=document.getElementById("movObs").value.trim();
+
+  if(!serial){alert("Informe o número do medidor.");return;}
+
+  db.moves.unshift({
+    data:new Date().toLocaleString("pt-BR"),
+    serial,tipo,responsavel,obs
+  });
+  salvarBanco();
+  renderMovimentacoes();
+
+  document.getElementById("movSerial").value="";
+  document.getElementById("movResponsavel").value="";
+  document.getElementById("movObs").value="";
+  alert("Movimentação registrada.");
+}
+
+function renderMovimentacoes(){
+  const tbody=document.getElementById("tabelaMovimentacoes");
+  if(!db.moves.length){
+    tbody.innerHTML='<tr><td colspan="5" class="empty">Nenhuma movimentação registrada.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=db.moves.map(m=>`
+    <tr><td>${escaparHTML(m.data)}</td><td>${escaparHTML(m.serial)}</td>
+    <td>${escaparHTML(m.tipo)}</td><td>${escaparHTML(m.responsavel)}</td>
+    <td>${escaparHTML(m.obs)}</td></tr>
+  `).join("");
+}
+
+/* ==============================
+   EXPORTAÇÃO
+============================== */
+function exportarBI(){
+  if(!db.bi.length){alert("Não há dados do BI para exportar.");return;}
+
+  const linhas=[CAMPOS_BI.map(c=>c.key)];
+  db.bi.forEach(linha=>{
+    linhas.push(CAMPOS_BI.map(c=>valorBI(linha,c.key)));
+  });
+
+  const csv=linhas.map(l=>l.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\r\n");
+  baixarArquivo("\uFEFF"+csv,"BI_Equatorial.csv","text/csv;charset=utf-8");
+}
+
+function baixarBackup(){
+  baixarArquivo(JSON.stringify(db,null,2),"backup_medidores.json","application/json");
+}
+
+function baixarArquivo(conteudo,nome,tipo){
+  const blob=new Blob([conteudo],{type:tipo});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=nome;a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restaurarBackup(){
+  const file=document.getElementById("arquivoBackup").files[0];
+  if(!file){alert("Selecione um arquivo de backup.");return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const dados=JSON.parse(reader.result);
+      db={
+        bi:Array.isArray(dados.bi)?dados.bi:[],
+        sap:Array.isArray(dados.sap)?dados.sap:[],
+        moves:Array.isArray(dados.moves)?dados.moves:[],
+        devolucoes:Array.isArray(dados.devolucoes)?dados.devolucoes:[]
+      };
+      salvarBanco();atualizarTudo();
+      alert("Backup restaurado com sucesso.");
+    }catch(e){alert("Arquivo de backup inválido.");}
+  };
+  reader.readAsText(file);
+}
+
+function limparBases(){
+  if(!confirm("Tem certeza que deseja apagar todas as bases e registros? Esta ação não pode ser desfeita."))return;
+  db={bi:[],sap:[],moves:[],devolucoes:[]};
+  salvarBanco();atualizarTudo();
+  alert("Dados apagados.");
+}
+
+/* ==============================
+   LEITOR DE CÓDIGO DE BARRAS
+============================== */
+function bibliotecaZXing(){
+  return window.ZXingBrowser || window.ZXing || null;
+}
+
+function carregarBibliotecaZXing(){
+  return new Promise((resolve,reject)=>{
+    const existente=bibliotecaZXing();
+    if(existente && existente.BrowserMultiFormatReader){
+      resolve(existente);return;
+    }
+
+    const urls=[
+      "https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/index.min.js",
+      "https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"
+    ];
+
+    let tentativa=0;
+    function tentar(){
+      if(bibliotecaZXing()?.BrowserMultiFormatReader){
+        resolve(bibliotecaZXing());return;
+      }
+      if(tentativa>=urls.length){
+        reject(new Error("A biblioteca do leitor não carregou. Verifique sua internet ou bloqueio de scripts."));
+        return;
+      }
+
+      const script=document.createElement("script");
+      script.src=urls[tentativa++];
+      script.onload=()=>{
+        if(bibliotecaZXing()?.BrowserMultiFormatReader) resolve(bibliotecaZXing());
+        else tentar();
+      };
+      script.onerror=()=>tentar();
+      document.head.appendChild(script);
+    }
+    tentar();
+  });
+}
+
+async function abrirCamera(inputId){
+  fecharCamera();
+  cameraTarget=inputId;
+  scanDetected=false;
+
+  const modal=document.getElementById("cameraModal");
+  const video=document.getElementById("cameraVideo");
+  const status=document.getElementById("cameraStatus");
+
+  modal.classList.add("open");
+  status.textContent="Carregando biblioteca do leitor...";
+
+  try{
+    if(!window.isSecureContext ||
+       !navigator.mediaDevices ||
+       !navigator.mediaDevices.getUserMedia){
+      throw new Error("A câmera exige HTTPS ou localhost. Abra o site pelo GitHub Pages ou em localhost.");
+    }
+
+    const ZX=await carregarBibliotecaZXing();
+    status.textContent="Solicitando permissão para acessar a câmera...";
+
+    const Reader=ZX.BrowserMultiFormatReader;
+    const leitor=new Reader();
+
+    const devices=await navigator.mediaDevices.enumerateDevices();
+    const cameras=devices.filter(d=>d.kind==="videoinput");
+    const traseira=cameras.find(d=>/back|rear|environment|traseira/i.test(d.label));
+    const deviceId=traseira?traseira.deviceId:(cameras.length?cameras[cameras.length-1].deviceId:undefined);
+
+    cameraControls=await leitor.decodeFromVideoDevice(
+      deviceId,
+      video,
+      (resultado,erro)=>{
+        if(resultado && !scanDetected){
+          scanDetected=true;
+          const codigo=resultado.getText();
+          const input=document.getElementById(cameraTarget);
+
+          if(input){
+            input.value=codigo;
+            input.dispatchEvent(new Event("input",{bubbles:true}));
+          }
+
+          status.textContent="Código identificado: "+codigo;
+
+          setTimeout(()=>{
+            fecharCamera();
+            if(cameraTarget==="consultaSerial") consultarMedidor();
+          },350);
+        }
+      }
+    );
+
+    status.textContent="Câmera ativa. Aponte para o código de barras.";
+  }catch(err){
+    console.error("Erro no leitor:",err);
+    status.textContent=err.message||"Não foi possível iniciar o leitor.";
+    status.className="error";
+  }
+}
+
+function fecharCamera(){
+  try{
+    if(cameraControls){
+      cameraControls.stop();
+      cameraControls=null;
+    }
+  }catch(e){console.warn(e);}
+
+  const video=document.getElementById("cameraVideo");
+  if(video){
+    const stream=video.srcObject;
+    if(stream && stream.getTracks){
+      stream.getTracks().forEach(track=>track.stop());
+    }
+    video.pause();
+    video.srcObject=null;
+  }
+
+  document.getElementById("cameraModal").classList.remove("open");
+  cameraTarget=null;
+  scanDetected=false;
+}
+
+document.getElementById("cameraModal").addEventListener("click",e=>{
+  if(e.target.id==="cameraModal") fecharCamera();
 });
 
-/* PRÉVIA */
-
-function renderBI(){
- const rows=state.bi.slice(0,20);
-
- $('biPreview').innerHTML=rows.map(row=>
-  '<tr>'+
-  COLUMNS.map(col=>`<td>${esc(row[col])}</td>`).join('')+
-  '</tr>'
- ).join('')||'<tr><td colspan="8" class="empty">Importe a planilha BI.</td></tr>';
+/* ==============================
+   INDICADORES E INICIALIZAÇÃO
+============================== */
+function atualizarIndicadores(){
+  document.getElementById("totalBI").textContent=db.bi.length;
+  document.getElementById("totalSAP").textContent=db.sap.length;
+  document.getElementById("totalMov").textContent=db.moves.length;
+  document.getElementById("totalDev").textContent=db.devolucoes.length;
 }
 
-/* LIMPAR BI */
-
-$('clearBI').onclick=()=>{
- if(!confirm('Deseja realmente apagar a base BI importada?'))return;
- state.bi=[];
- page=1;
- save();
- render();
-};
-
-/* EXPORTAR BI */
-
-function download(blob,name){
- const url=URL.createObjectURL(blob);
- const a=document.createElement('a');
- a.href=url;
- a.download=name;
- a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1500);
+function atualizarTudo(){
+  atualizarIndicadores();
+  renderTabelaBI();
+  renderMovimentacoes();
+  renderDevolucoes();
 }
 
-$('exportBI').onclick=()=>{
- const rows=[COLUMNS,...state.bi.map(r=>COLUMNS.map(c=>r[c]))];
-
- const csv=rows.map(row=>
-  row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')
- ).join('\r\n');
-
- download(
-  new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),
-  'BI-Equatorial-'+today()+'.csv'
- );
-};
-
-/* BACKUP */
-
-$('exportBtn').onclick=()=>{
- download(
-  new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),
-  'backup-central-medidores-'+today()+'.json'
- );
-};
-
-/* RELATÓRIOS */
-
-function reportRows(){
- const q=$('reportFilter').value.trim();
- const condition=$('reportCondition').value;
-
- return state.moves.filter(m=>
-  m.type==='Devolução'&&
-  (!condition||m.condition===condition)&&
-  (!q||normalizeSerial([
-   m.serial,m.person,m.origin,m.details
-  ].join(' ')).includes(normalizeSerial(q)))
- );
+function escaparHTML(valor){
+  return String(valor??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
 }
 
-function renderReport(){
- const rows=reportRows();
+carregarBanco();
 
- $('reportBody').innerHTML=rows.map(m=>`
-  <tr>
-   <td>${esc(m.date)}</td>
-   <td>${esc(m.serial)}</td>
-   <td>${esc(m.person)}</td>
-   <td>${esc(m.origin)}</td>
-   <td>${esc(m.condition)}</td>
-   <td>${esc(m.details)}</td>
-  </tr>
- `).join('')||'<tr><td colspan="6" class="empty">Nenhum resultado.</td></tr>';
+if(!window.XLSX){
+  document.getElementById("statusSistema").textContent="Biblioteca Excel indisponível";
+  document.getElementById("statusSistema").classList.add("error");
 }
-
-$('reportBtn').onclick=renderReport;
-
-$('reportCsv').onclick=()=>{
- const rows=reportRows();
- const head=['Data','Medidor','Responsável','Origem','Condição','Detalhes'];
-
- const csv=[head,...rows.map(m=>[
-  m.date,m.serial,m.person,m.origin,m.condition,m.details
- ])].map(row=>
-  row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')
- ).join('\r\n');
-
- download(
-  new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),
-  'relatorio-devolucoes-'+today()+'.csv'
- );
-};
-
-/* CÂMERA */
-
-let scannerControls=null;
-let scannerReader=null;
-let scannerTarget=null;
-let scannerBusy=false;
-
-const scannerModal=$('scannerModal');
-const scannerVideo=$('scannerVideo');
-const scannerStatus=$('scannerStatus');
-
-async function stopScanner(){
- scannerBusy=false;
-
- if(scannerControls){
-  try{scannerControls.stop();}catch(e){}
-  scannerControls=null;
- }
-
- if(scannerVideo.srcObject){
-  scannerVideo.srcObject.getTracks().forEach(track=>track.stop());
-  scannerVideo.srcObject=null;
- }
-
- scannerModal.style.display='none';
- scannerReader=null;
-}
-
-async function startScanner(targetId){
- if(scannerBusy)return;
-
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-  alert('Câmera indisponível. Acesse o site por HTTPS ou localhost.');
-  return;
- }
-
- if(!window.ZXingBrowser||
-    !window.ZXingBrowser.BrowserMultiFormatReader){
-  alert('Biblioteca do leitor não carregou. Verifique a internet e atualize a página.');
-  return;
- }
-
- scannerTarget=targetId;
- scannerBusy=true;
- scannerModal.style.display='flex';
- scannerStatus.textContent='Solicitando acesso à câmera...';
-
- try{
-  scannerReader=new ZXingBrowser.BrowserMultiFormatReader();
-
-  scannerControls=await scannerReader.decodeFromVideoDevice(
-   undefined,
-   scannerVideo,
-   (result,error)=>{
-    if(!result||!scannerBusy)return;
-
-    const code=result.getText();
-    if(!code)return;
-
-    scannerBusy=false;
-    const destination=scannerTarget;
-
-    $(destination).value=code.trim();
-
-    scannerStatus.textContent='Código identificado: '+code;
-
-    stopScanner().then(()=>{
-     if(destination==='searchSerial'){
-      $('searchBtn').click();
-     }
-
-     if(destination==='traceSerial'){
-      $('traceBtn').click();
-     }
-
-     if(destination==='devSerial'){
-      $('devLookup').innerHTML=resultHTML(code);
-      $('devPerson').focus();
-     }
-    });
-   }
-  );
-
-  scannerStatus.textContent='Câmera ativa. Aponte para o código de barras.';
-
- }catch(error){
-  console.error(error);
-  await stopScanner();
-
-  alert(
-   'Não foi possível abrir a câmera.\n\n'+
-   'Verifique a permissão do navegador, se outra aplicação está usando a câmera e se o site está em HTTPS.'
-  );
- }
-}
-
-document.querySelectorAll('[data-scan-target]').forEach(button=>{
- button.addEventListener('click',()=>{
-  startScanner(button.dataset.scanTarget);
- });
-});
-
-$('closeScanner').addEventListener('click',stopScanner);
-
-scannerModal.addEventListener('click',e=>{
- if(e.target===scannerModal)stopScanner();
-});
-
-document.addEventListener('keydown',e=>{
- if(e.key==='Escape'&&scannerModal.style.display==='flex'){
-  stopScanner();
- }
-});
-
-/* RENDER GERAL */
-
-function render(){
- renderStats();
- fillFilters();
- renderOverview();
- renderBI();
- renderDevolutions();
- renderRecent();
- renderReport();
-}
-
-/* INICIALIZAÇÃO */
-
-$('devDate').value=today();
-
-load();
-render();
-
-try{
- const last=sessionStorage.getItem('central_active_tab');
- if(last&&$(last))showTab(last);
-}catch(e){}
-
-})();
 </script>
 </body>
 </html>
