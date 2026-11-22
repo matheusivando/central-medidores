@@ -4,17 +4,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f172a">
-<title>Central de Medidores — Protocolo & Rastreio</title>
+<meta name="theme-color" content="#0b1220">
+<title>Central de Medidores - Equatorial</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
 
 <style>
-:root {
- --bg:#0b1220;--card:#131f33;--input:#091426;
- --border:#2b3b54;--text:#edf4ff;--muted:#9aabc2;
- --blue:#3b82f6;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;
+:root{
+--bg:#0b1220;--card:#131f33;--input:#091426;
+--border:#2b3b54;--text:#edf4ff;--muted:#9aabc2;
+--blue:#3b82f6;--green:#10b981;--yellow:#f59e0b;
+--red:#ef4444;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}
@@ -26,7 +27,7 @@ small,.muted,.hint{color:var(--muted)}
 nav{display:flex;overflow-x:auto;background:#111c30;border-bottom:1px solid var(--border);padding:0 12px;gap:4px}
 .tab{background:transparent;color:var(--muted);border:0;border-radius:0;padding:15px;white-space:nowrap;border-bottom:3px solid transparent}
 .tab.active{color:#93c5fd;border-color:var(--blue);background:#1d3557}
-main{max-width:1450px;margin:22px auto;padding:0 16px 50px}
+main{max-width:1550px;margin:22px auto;padding:0 16px 50px}
 .panel{display:none}
 .panel.active{display:block}
 .card,.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px;margin-bottom:16px}
@@ -45,23 +46,22 @@ button:hover{filter:brightness(1.15)}
 .ghost{background:transparent;border:1px solid var(--border)}
 .actions,.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .grow{flex:1 1 220px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px;margin-bottom:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:16px}
 .stat strong{display:block;font-size:26px;margin-top:7px}
 .stat span{font-size:12px;color:var(--muted)}
-.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:9px}
-table{width:100%;border-collapse:collapse;min-width:650px;font-size:12px}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:9px;max-height:650px}
+table{width:100%;border-collapse:collapse;min-width:950px;font-size:12px}
 th,td{padding:11px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
-th{background:#192943;color:#a9bad0;text-transform:uppercase;font-size:10px}
+th{background:#192943;color:#a9bad0;text-transform:uppercase;font-size:10px;position:sticky;top:0;z-index:2}
 tr:hover td{background:#ffffff08}
 .empty{text-align:center;padding:25px;color:var(--muted)}
 .notice{padding:12px;background:#10243c;border:1px solid #36577e;border-radius:8px;margin:10px 0;color:#c8dcf5}
-.pill{padding:4px 8px;border-radius:20px;background:#713f12;color:#fde68a;font-size:10px}
 .result{background:#0c192c;border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;overflow-wrap:anywhere}
 .result h3{margin-top:0}
-.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px}
-.result-grid div{background:#14243a;padding:10px;border-radius:7px}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px}
+.result-grid div{background:#14243a;padding:12px;border-radius:7px;overflow-wrap:anywhere}
 .result-grid small{display:block}
-.result-grid b{display:block;margin-top:5px}
+.result-grid b{display:block;margin-top:6px;white-space:normal}
 .upload{display:inline-flex;align-items:center;gap:7px;background:#0b1628;border:1px dashed #49617f;padding:9px;border-radius:8px;cursor:pointer;font-size:12px}
 .upload input{display:none}
 .upload.loaded{border-color:var(--green)}
@@ -70,16 +70,21 @@ tr:hover td{background:#ffffff08}
 .scan-box{width:100%;max-width:550px;background:#131f33;border:1px solid #2b3b54;border-radius:14px;padding:16px}
 .scan-video{width:100%;max-height:60vh;background:#000;border-radius:10px;object-fit:contain}
 .scan-status{padding:12px;background:#10243c;border:1px solid #36577e;border-radius:8px;margin-top:12px;color:#c8dcf5}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#173c34;color:#6ee7b7;font-size:11px}
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}
 footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 @media(max-width:600px){
- header{padding:12px}.brand h1{font-size:15px}
- main{padding:0 10px 35px;margin-top:13px}
- .card{padding:13px}.tab{padding:12px 10px;font-size:12px}
- .stats{grid-template-columns:repeat(2,1fr)}
- .scan-btn{padding:11px 10px}
+header{padding:12px}
+.brand h1{font-size:15px}
+main{padding:0 10px 35px;margin-top:13px}
+.card{padding:13px}
+.tab{padding:12px 10px;font-size:12px}
+.stats{grid-template-columns:repeat(2,1fr)}
+.scan-btn{padding:11px 10px}
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -87,15 +92,14 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
   <div class="logo">⚡</div>
   <div>
    <h1>Central de Medidores</h1>
-   <small>Protocolo, estoque e rastreabilidade</small>
+   <small>BI Equatorial • Consulta e rastreabilidade</small>
   </div>
  </div>
+
  <div class="actions">
-  <label class="upload" id="biLabel">📊 Importar BI
+  <label class="upload" id="biLabel">
+   📊 Importar BI Equatorial
    <input type="file" id="biFile" accept=".xlsx,.xls,.csv">
-  </label>
-  <label class="upload" id="sapLabel">🗂️ Importar SAP
-   <input type="file" id="sapFile" accept=".xlsx,.xls,.csv">
   </label>
   <button class="ghost" id="exportBtn">Exportar backup</button>
  </div>
@@ -103,98 +107,173 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 
 <nav id="tabs">
  <button class="tab active" data-tab="visao">Visão Geral</button>
- <button class="tab" data-tab="expedicao">Expedição</button>
  <button class="tab" data-tab="devolucao">Devolução</button>
  <button class="tab" data-tab="consulta">Consulta / Rastreio</button>
- <button class="tab" data-tab="bases">Bases SAP & BI</button>
+ <button class="tab" data-tab="bases">Base BI Equatorial</button>
  <button class="tab" data-tab="relatorios">Relatórios</button>
 </nav>
 
 <main>
 
+<!-- VISÃO GERAL -->
+
 <section class="panel active" id="visao">
+
  <div class="stats">
-  <div class="stat"><span>Registros BI</span><strong id="sTotal">0</strong></div>
-  <div class="stat"><span>Disponíveis estimados</span><strong id="sDisponiveis">0</strong></div>
-  <div class="stat"><span>Em expedição</span><strong id="sExpedicao">0</strong></div>
-  <div class="stat"><span>Devoluções</span><strong id="sDevolvidos">0</strong></div>
+  <div class="stat">
+   <span>Total de medidores no BI</span>
+   <strong id="sTotal">0</strong>
+  </div>
+  <div class="stat">
+   <span>Depósitos identificados</span>
+   <strong id="sDepositos">0</strong>
+  </div>
+  <div class="stat">
+   <span>Status de sistema</span>
+   <strong id="sStatus">0</strong>
+  </div>
+  <div class="stat">
+   <span>Movimentações locais</span>
+   <strong id="sMoves">0</strong>
+  </div>
  </div>
 
  <div class="card">
-  <h2>🔎 Pesquisa geral de medidores</h2>
+  <h2>🔎 Consultar medidor</h2>
+
   <div class="row">
    <div class="field grow">
-    <label>Número do medidor</label>
-    <input id="searchSerial" placeholder="Digite ou leia o código">
+    <label>Número de série</label>
+    <input id="searchSerial" placeholder="Digite o NUMERO_SERIE">
    </div>
+
    <button class="scan-btn" data-scan-target="searchSerial">📷 Câmera</button>
    <button class="primary" id="searchBtn">Pesquisar</button>
   </div>
-  <p class="hint">Pesquisa nas bases BI, SAP e movimentações locais.</p>
+
+  <p class="hint">
+   Pesquisa diretamente no campo NUMERO_SERIE do BI Equatorial.
+  </p>
+
   <div id="searchResult"></div>
  </div>
 
  <div class="card">
-  <h2>Últimas movimentações</h2>
+  <div class="row" style="justify-content:space-between">
+   <h2>📊 Visão geral do BI Equatorial</h2>
+   <span class="badge" id="biStatus">Aguardando importação</span>
+  </div>
+
+  <div class="grid">
+   <div class="field">
+    <label>Pesquisar na base</label>
+    <input id="overviewFilter" placeholder="Número, depósito, usuário ou status...">
+   </div>
+
+   <div class="field">
+    <label>Filtrar depósito</label>
+    <select id="depositFilter">
+     <option value="">Todos os depósitos</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Filtrar status</label>
+    <select id="statusFilter">
+     <option value="">Todos os status</option>
+    </select>
+   </div>
+  </div>
+
+  <div class="actions" style="margin:12px 0">
+   <button class="primary" id="filterBtn">Aplicar filtros</button>
+   <button class="ghost" id="clearFilters">Limpar filtros</button>
+  </div>
+
+  <p class="hint" id="tableInfo">Nenhum registro carregado.</p>
+
   <div class="table-wrap">
    <table>
-    <thead><tr><th>Data</th><th>Medidor</th><th>Movimentação</th><th>Responsável</th><th>Destino</th></tr></thead>
+    <thead>
+     <tr>
+      <th>NUMERO_SERIE</th>
+      <th>DEPOSITO_ATUAL</th>
+      <th>STATUS_SISTEMA</th>
+      <th>STATUS_USUARIO</th>
+      <th>DATA_MOVIM</th>
+      <th>TEMPO_INTERVALO_RECEB_FINL</th>
+      <th>TEMPO_ULT_MOV_HOJE</th>
+      <th>USUARIO</th>
+     </tr>
+    </thead>
+    <tbody id="overviewBody">
+     <tr><td colspan="8" class="empty">Importe a planilha BI Equatorial.</td></tr>
+    </tbody>
+   </table>
+  </div>
+
+  <div class="pagination">
+   <button class="ghost" id="prevPage">← Anterior</button>
+   <span id="pageInfo" class="muted">Página 0</span>
+   <button class="ghost" id="nextPage">Próxima →</button>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>↕️ Últimas movimentações locais</h2>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Data</th>
+      <th>Medidor</th>
+      <th>Tipo</th>
+      <th>Responsável</th>
+      <th>Origem</th>
+      <th>Detalhes</th>
+     </tr>
+    </thead>
     <tbody id="recentBody"></tbody>
    </table>
   </div>
  </div>
+
 </section>
 
-<section class="panel" id="expedicao">
- <div class="card">
-  <h2>📦 Registrar expedição</h2>
-  <div class="grid">
-   <div class="field">
-    <label>Medidor</label>
-    <div class="row">
-     <input id="expSerial" placeholder="Código do medidor">
-     <button class="scan-btn" data-scan-target="expSerial">📷</button>
-    </div>
-   </div>
-   <div class="field"><label>Data</label><input id="expDate" type="date"></div>
-   <div class="field"><label>Responsável / solicitante</label><input id="expPerson"></div>
-   <div class="field"><label>Destino / equipe</label><input id="expDestination"></div>
-   <div class="field"><label>Protocolo SAP</label><input id="expProtocol"></div>
-  </div>
-  <div class="field" style="margin-top:12px">
-   <label>Observações</label><textarea id="expNotes"></textarea>
-  </div>
-  <div class="actions" style="margin-top:13px">
-   <button class="primary" id="saveExp">Registrar expedição</button>
-   <button class="ghost" id="clearExp">Limpar</button>
-  </div>
- </div>
- <div class="card">
-  <h2>Expedições pendentes</h2>
-  <div class="table-wrap">
-   <table>
-    <thead><tr><th>Data</th><th>Medidor</th><th>Responsável</th><th>Destino</th><th>Protocolo</th><th>Status</th><th>Ação</th></tr></thead>
-    <tbody id="expBody"></tbody>
-   </table>
-  </div>
- </div>
-</section>
+<!-- DEVOLUÇÃO -->
 
 <section class="panel" id="devolucao">
+
  <div class="card">
   <h2>↩️ Registrar devolução</h2>
+
   <div class="grid">
+
    <div class="field">
-    <label>Medidor</label>
+    <label>Número do medidor</label>
     <div class="row">
-     <input id="devSerial" placeholder="Código do medidor">
+     <input id="devSerial" placeholder="Número de série">
      <button class="scan-btn" data-scan-target="devSerial">📷</button>
     </div>
    </div>
-   <div class="field"><label>Data</label><input id="devDate" type="date"></div>
-   <div class="field"><label>Recebido por</label><input id="devPerson"></div>
-   <div class="field"><label>Origem / devolvido por</label><input id="devOrigin"></div>
-   <div class="field"><label>Condição</label>
+
+   <div class="field">
+    <label>Data</label>
+    <input id="devDate" type="date">
+   </div>
+
+   <div class="field">
+    <label>Recebido por</label>
+    <input id="devPerson">
+   </div>
+
+   <div class="field">
+    <label>Origem / Devolvido por</label>
+    <input id="devOrigin">
+   </div>
+
+   <div class="field">
+    <label>Condição</label>
     <select id="devCondition">
      <option>Em triagem</option>
      <option>Disponível</option>
@@ -202,148 +281,286 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
      <option>Enviar para análise</option>
     </select>
    </div>
+
   </div>
+
   <div class="field" style="margin-top:12px">
-   <label>Observações</label><textarea id="devNotes"></textarea>
+   <label>Observações</label>
+   <textarea id="devNotes"></textarea>
   </div>
+
   <div class="actions" style="margin-top:13px">
    <button class="success" id="saveDev">Registrar devolução</button>
    <button class="ghost" id="clearDev">Limpar</button>
   </div>
+
+  <div id="devLookup"></div>
  </div>
+
  <div class="card">
   <h2>Histórico de devoluções</h2>
   <div class="table-wrap">
    <table>
-    <thead><tr><th>Data</th><th>Medidor</th><th>Recebido por</th><th>Origem</th><th>Condição</th><th>Observação</th></tr></thead>
+    <thead>
+     <tr>
+      <th>Data</th>
+      <th>Medidor</th>
+      <th>Recebido por</th>
+      <th>Origem</th>
+      <th>Condição</th>
+      <th>Observações</th>
+     </tr>
+    </thead>
     <tbody id="devBody"></tbody>
    </table>
   </div>
  </div>
+
 </section>
 
+<!-- CONSULTA / RASTREIO -->
+
 <section class="panel" id="consulta">
+
  <div class="card">
   <h2>🧭 Consulta e rastreabilidade</h2>
+
   <div class="row">
    <div class="field grow">
-    <label>Número do medidor</label>
+    <label>Número de série</label>
     <input id="traceSerial" placeholder="Digite ou leia o código">
    </div>
+
    <button class="scan-btn" data-scan-target="traceSerial">📷 Câmera</button>
    <button class="primary" id="traceBtn">Consultar</button>
   </div>
+
   <div id="traceResult"></div>
  </div>
+
 </section>
 
+<!-- BASE BI -->
+
 <section class="panel" id="bases">
+
  <div class="card">
-  <h2>📚 Bases de dados</h2>
+  <h2>📚 Base de dados BI Equatorial</h2>
+
   <div class="notice">
-   Importe planilhas Excel ou CSV exportadas do SAP e BI.
-   Os dados ficam armazenados neste navegador. Não existe conexão
-   automática com os sistemas internos.
+   Importe o arquivo exportado do BI Equatorial.
+   A planilha será utilizada para alimentar a Visão Geral e as consultas
+   de medidores. Os dados ficam armazenados neste navegador.
   </div>
-  <div class="grid">
-   <div class="field"><label>Base BI</label><input id="biFile2" type="file" accept=".xlsx,.xls,.csv"></div>
-   <div class="field"><label>Base SAP</label><input id="sapFile2" type="file" accept=".xlsx,.xls,.csv"></div>
+
+  <label class="upload" id="biLabel2">
+   📊 Selecionar planilha BI
+   <input type="file" id="biFile2" accept=".xlsx,.xls,.csv">
+  </label>
+
+  <div class="stats" style="margin-top:15px">
+   <div class="stat">
+    <span>Registros importados</span>
+    <strong id="biCount">0</strong>
+   </div>
+   <div class="stat">
+    <span>Números de série únicos</span>
+    <strong id="uniqueCount">0</strong>
+   </div>
+   <div class="stat">
+    <span>Movimentações locais</span>
+    <strong id="moveCount">0</strong>
+   </div>
   </div>
-  <div class="actions" style="margin-top:12px">
+
+  <div class="actions">
    <button class="ghost" id="clearBI">Limpar BI</button>
-   <button class="ghost" id="clearSAP">Limpar SAP</button>
+   <button class="ghost" id="exportBI">Exportar BI CSV</button>
   </div>
-  <div class="grid" style="margin-top:15px">
-   <div class="stat"><span>Registros BI</span><strong id="biCount">0</strong></div>
-   <div class="stat"><span>Registros SAP</span><strong id="sapCount">0</strong></div>
-   <div class="stat"><span>Movimentações</span><strong id="moveCount">0</strong></div>
-  </div>
-  <p class="hint">Colunas reconhecidas: MEDIDOR, NÚMERO DO MEDIDOR, SERIAL ou NUMERO.</p>
+
+  <p class="hint">
+   Campos reconhecidos: NUMERO_SERIE, DEPOSITO_ATUAL, STATUS_SISTEMA,
+   STATUS_USUARIO, DATA_MOVIM, TEMPO_INTERVALO_RECEB_FINL,
+   TEMPO_ULT_MOV_HOJE e USUARIO.
+  </p>
  </div>
+
  <div class="card">
-  <h2>Prévia da base BI</h2>
+  <h2>Prévia da planilha importada</h2>
   <div class="table-wrap">
    <table>
-    <thead id="biHead"></thead><tbody id="biPreview"></tbody>
+    <thead>
+     <tr>
+      <th>NUMERO_SERIE</th>
+      <th>DEPOSITO_ATUAL</th>
+      <th>STATUS_SISTEMA</th>
+      <th>STATUS_USUARIO</th>
+      <th>DATA_MOVIM</th>
+      <th>TEMPO_INTERVALO_RECEB_FINL</th>
+      <th>TEMPO_ULT_MOV_HOJE</th>
+      <th>USUARIO</th>
+     </tr>
+    </thead>
+    <tbody id="biPreview"></tbody>
    </table>
   </div>
  </div>
+
 </section>
 
+<!-- RELATÓRIOS -->
+
 <section class="panel" id="relatorios">
+
  <div class="card">
-  <h2>📈 Relatórios e filtros</h2>
+  <h2>📈 Relatórios de devoluções</h2>
+
   <div class="grid">
-   <div class="field"><label>Pesquisar</label><input id="reportFilter"></div>
-   <div class="field"><label>Tipo</label>
-    <select id="reportType">
-     <option value="">Todos</option>
-     <option>Expedição</option>
-     <option>Devolução</option>
+   <div class="field">
+    <label>Pesquisar</label>
+    <input id="reportFilter" placeholder="Medidor, responsável ou origem">
+   </div>
+
+   <div class="field">
+    <label>Condição</label>
+    <select id="reportCondition">
+     <option value="">Todas</option>
+     <option>Em triagem</option>
+     <option>Disponível</option>
+     <option>Sucata</option>
+     <option>Enviar para análise</option>
     </select>
    </div>
   </div>
+
   <div class="actions" style="margin:12px 0">
    <button class="primary" id="reportBtn">Aplicar filtros</button>
    <button class="ghost" id="reportCsv">Baixar CSV</button>
   </div>
+
   <div class="table-wrap">
    <table>
-    <thead><tr><th>Data</th><th>Medidor</th><th>Tipo</th><th>Responsável</th><th>Destino</th><th>Detalhes</th></tr></thead>
+    <thead>
+     <tr>
+      <th>Data</th>
+      <th>Medidor</th>
+      <th>Responsável</th>
+      <th>Origem</th>
+      <th>Condição</th>
+      <th>Detalhes</th>
+     </tr>
+    </thead>
     <tbody id="reportBody"></tbody>
    </table>
   </div>
  </div>
+
 </section>
 
 </main>
 
-<!-- JANELA DO LEITOR -->
+<!-- LEITOR DE CÓDIGO DE BARRAS -->
+
 <div class="scan-modal" id="scannerModal">
  <div class="scan-box">
+
   <div class="row" style="justify-content:space-between">
    <h2 style="margin:0">📷 Leitor de medidores</h2>
    <button type="button" id="closeScanner" class="danger">Fechar ✕</button>
   </div>
-  <p class="hint">Aponte a câmera para o código de barras do medidor.</p>
+
+  <p class="hint">
+   Posicione o código de barras dentro da imagem.
+  </p>
+
   <video id="scannerVideo" class="scan-video" autoplay muted playsinline></video>
-  <div class="scan-status" id="scannerStatus">Aguardando câmera...</div>
+
+  <div class="scan-status" id="scannerStatus">
+   Aguardando câmera...
+  </div>
+
  </div>
 </div>
 
-<footer>Central de Medidores • Faça backups periódicos dos seus dados.</footer>
+<footer>
+ Central de Medidores • BI Equatorial • Faça backups periódicos.
+</footer>
 
 <script>
 (() => {
 'use strict';
 
-const KEY='central_medidores_v3';
-const $=id=>document.getElementById(id);
-const today=()=>{
- const d=new Date();
- return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const $ = id => document.getElementById(id);
+
+const KEY = 'central_medidores_equatorial_v4';
+
+const COLUMNS = [
+ 'NUMERO_SERIE',
+ 'DEPOSITO_ATUAL',
+ 'STATUS_SISTEMA',
+ 'STATUS_USUARIO',
+ 'DATA_MOVIM',
+ 'TEMPO_INTERVALO_RECEB_FINL',
+ 'TEMPO_ULT_MOV_HOJE',
+ 'USUARIO'
+];
+
+const today = () => {
+ const d = new Date();
+ return new Date(d.getTime()-d.getTimezoneOffset()*60000)
+  .toISOString().slice(0,10);
 };
 
-let state={bi:[],sap:[],moves:[]};
+let state = {
+ bi:[],
+ moves:[]
+};
 
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
- '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+let page = 1;
+const pageSize = 50;
+
+const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({
+ '&':'&amp;',
+ '<':'&lt;',
+ '>':'&gt;',
+ '"':'&quot;',
+ "'":'&#39;'
 }[c]));
 
-const norm=v=>String(v??'').trim().toUpperCase().replace(/\s+/g,'');
+function normalizeHeader(value){
+ return String(value ?? '')
+  .replace(/^\uFEFF/,'')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'')
+  .trim()
+  .toUpperCase()
+  .replace(/[^A-Z0-9]+/g,'_')
+  .replace(/^_|_$/g,'');
+}
+
+function normalizeSerial(value){
+ return String(value ?? '')
+  .trim()
+  .replace(/\s+/g,'')
+  .toUpperCase();
+}
 
 function load(){
  try{
-  const raw=localStorage.getItem(KEY);
+  const raw = localStorage.getItem(KEY);
+
   if(raw){
-   const x=JSON.parse(raw);
-   state={
-    bi:Array.isArray(x.bi)?x.bi:[],
-    sap:Array.isArray(x.sap)?x.sap:[],
-    moves:Array.isArray(x.moves)?x.moves:[]
+   const data = JSON.parse(raw);
+
+   state = {
+    bi:Array.isArray(data.bi)?data.bi:[],
+    moves:Array.isArray(data.moves)?data.moves:[]
    };
   }
- }catch(e){console.error(e);}
+ }catch(e){
+  console.error(e);
+  alert('Não foi possível recuperar os dados salvos.');
+ }
 }
 
 function save(){
@@ -355,14 +572,20 @@ function save(){
 }
 
 function showTab(name){
- if(!$ (name))return;
+ const panel = $(name);
+ if(!panel)return;
+
  document.querySelectorAll('.tab').forEach(b=>{
   b.classList.toggle('active',b.dataset.tab===name);
  });
+
  document.querySelectorAll('.panel').forEach(p=>{
   p.classList.toggle('active',p.id===name);
  });
- try{sessionStorage.setItem('central_active_tab',name);}catch(e){}
+
+ try{
+  sessionStorage.setItem('central_active_tab',name);
+ }catch(e){}
 }
 
 $('tabs').addEventListener('click',e=>{
@@ -370,124 +593,239 @@ $('tabs').addEventListener('click',e=>{
  if(button)showTab(button.dataset.tab);
 });
 
-function pending(){
- return state.moves.filter(m=>
-  m.type==='Expedição' &&
-  !state.moves.some(d=>
-   d.type==='Devolução' &&
-   norm(d.serial)===norm(m.serial) &&
-   new Date(d.date)>=new Date(m.date)
-  )
+/* IDENTIFICAÇÃO DAS COLUNAS */
+
+function getBIValue(row,column){
+ if(!row)return '';
+
+ if(Object.prototype.hasOwnProperty.call(row,column)){
+  return row[column];
+ }
+
+ return '';
+}
+
+function getSerial(row){
+ return getBIValue(row,'NUMERO_SERIE');
+}
+
+function findMeter(serial){
+ const target=normalizeSerial(serial);
+
+ if(!target)return [];
+
+ return state.bi.filter(row=>
+  normalizeSerial(getSerial(row))===target
  );
 }
 
-function render(){
- const ex=pending();
- const dev=state.moves.filter(m=>m.type==='Devolução');
+/* ESTATÍSTICAS */
+
+function renderStats(){
+ const deposits = new Set(
+  state.bi.map(r=>String(r.DEPOSITO_ATUAL??'').trim())
+   .filter(Boolean)
+ );
+
+ const statuses = new Set(
+  state.bi.map(r=>String(r.STATUS_SISTEMA??'').trim())
+   .filter(Boolean)
+ );
+
+ const unique = new Set(
+  state.bi.map(r=>normalizeSerial(getSerial(r))).filter(Boolean)
+ );
 
  $('sTotal').textContent=state.bi.length;
- $('sDisponiveis').textContent=Math.max(0,state.bi.length-ex.length);
- $('sExpedicao').textContent=ex.length;
- $('sDevolvidos').textContent=dev.length;
+ $('sDepositos').textContent=deposits.size;
+ $('sStatus').textContent=statuses.size;
+ $('sMoves').textContent=state.moves.length;
 
  $('biCount').textContent=state.bi.length;
- $('sapCount').textContent=state.sap.length;
+ $('uniqueCount').textContent=unique.size;
  $('moveCount').textContent=state.moves.length;
 
- $('recentBody').innerHTML=state.moves.slice(0,15).map(m=>`
-  <tr>
-   <td>${esc(m.date)} ${esc(m.time)}</td>
-   <td>${esc(m.serial)}</td>
-   <td>${esc(m.type)}</td>
-   <td>${esc(m.person)}</td>
-   <td>${esc(m.place||m.details)}</td>
-  </tr>
- `).join('')||'<tr><td colspan="5" class="empty">Nenhuma movimentação.</td></tr>';
+ $('biStatus').textContent=state.bi.length
+  ?'BI carregado'
+  :'Aguardando importação';
 
- $('expBody').innerHTML=ex.map(m=>`
-  <tr>
-   <td>${esc(m.date)}</td>
-   <td>${esc(m.serial)}</td>
-   <td>${esc(m.person)}</td>
-   <td>${esc(m.place)}</td>
-   <td>${esc(m.protocol)}</td>
-   <td><span class="pill">Pendente</span></td>
-   <td><button class="success" data-return="${esc(m.serial)}">Devolver</button></td>
-  </tr>
- `).join('')||'<tr><td colspan="7" class="empty">Nenhuma expedição pendente.</td></tr>';
-
- $('devBody').innerHTML=dev.map(m=>`
-  <tr>
-   <td>${esc(m.date)}</td><td>${esc(m.serial)}</td>
-   <td>${esc(m.person)}</td><td>${esc(m.origin)}</td>
-   <td>${esc(m.condition)}</td><td>${esc(m.details)}</td>
-  </tr>
- `).join('')||'<tr><td colspan="6" class="empty">Nenhuma devolução.</td></tr>';
-
- renderBI();
- renderReport();
+ $('biLabel').classList.toggle('loaded',state.bi.length>0);
+ $('biLabel2').classList.toggle('loaded',state.bi.length>0);
 }
 
-function serialOf(obj){
- if(!obj||typeof obj!=='object')return '';
- const keys=Object.keys(obj);
- const key=keys.find(k=>{
-  const normalized=k.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-  return /MEDIDOR|SERIAL|NUMERO/.test(normalized);
+/* FILTROS */
+
+function fillFilters(){
+ const deposits=[...new Set(
+  state.bi.map(r=>String(r.DEPOSITO_ATUAL??'').trim()).filter(Boolean)
+ )].sort();
+
+ const statuses=[...new Set(
+  state.bi.map(r=>String(r.STATUS_SISTEMA??'').trim()).filter(Boolean)
+ )].sort();
+
+ const currentDeposit=$('depositFilter').value;
+ const currentStatus=$('statusFilter').value;
+
+ $('depositFilter').innerHTML=
+  '<option value="">Todos os depósitos</option>'+
+  deposits.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+
+ $('statusFilter').innerHTML=
+  '<option value="">Todos os status</option>'+
+  statuses.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+
+ if(deposits.includes(currentDeposit))
+  $('depositFilter').value=currentDeposit;
+
+ if(statuses.includes(currentStatus))
+  $('statusFilter').value=currentStatus;
+}
+
+function filteredBI(){
+ const q=normalizeSerial($('overviewFilter').value);
+ const deposit=$('depositFilter').value;
+ const status=$('statusFilter').value;
+
+ return state.bi.filter(row=>{
+  const matchesText=!q||COLUMNS.some(col=>
+   normalizeSerial(row[col]).includes(q)
+  );
+
+  const matchesDeposit=!deposit||
+   String(row.DEPOSITO_ATUAL??'')===deposit;
+
+  const matchesStatus=!status||
+   String(row.STATUS_SISTEMA??'')===status;
+
+  return matchesText&&matchesDeposit&&matchesStatus;
  });
- return key?String(obj[key]??'').trim():'';
 }
 
-function lookup(serial){
- const n=norm(serial);
- return {
-  bi:state.bi.filter(r=>norm(serialOf(r))===n),
-  sap:state.sap.filter(r=>norm(serialOf(r))===n),
-  moves:state.moves.filter(m=>norm(m.serial)===n)
- };
+/* TABELA GERAL DO BI */
+
+function renderOverview(){
+ const rows=filteredBI();
+
+ const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
+
+ if(page>totalPages)page=totalPages;
+ if(page<1)page=1;
+
+ const start=(page-1)*pageSize;
+ const visible=rows.slice(start,start+pageSize);
+
+ $('overviewBody').innerHTML=visible.map(row=>
+  '<tr>'+
+  COLUMNS.map(col=>`<td>${esc(row[col])}</td>`).join('')+
+  '</tr>'
+ ).join('')||'<tr><td colspan="8" class="empty">Nenhum medidor encontrado.</td></tr>';
+
+ $('tableInfo').textContent=
+  `Exibindo ${visible.length} de ${rows.length} registros filtrados. Total na base: ${state.bi.length}.`;
+
+ $('pageInfo').textContent=`Página ${page} de ${totalPages}`;
+
+ $('prevPage').disabled=page<=1;
+ $('nextPage').disabled=page>=totalPages;
 }
+
+$('filterBtn').onclick=()=>{
+ page=1;
+ renderOverview();
+};
+
+$('overviewFilter').addEventListener('keydown',e=>{
+ if(e.key==='Enter'){
+  page=1;
+  renderOverview();
+ }
+});
+
+$('depositFilter').onchange=()=>{
+ page=1;
+ renderOverview();
+};
+
+$('statusFilter').onchange=()=>{
+ page=1;
+ renderOverview();
+};
+
+$('prevPage').onclick=()=>{
+ if(page>1){
+  page--;
+  renderOverview();
+ }
+};
+
+$('nextPage').onclick=()=>{
+ page++;
+ renderOverview();
+};
+
+$('clearFilters').onclick=()=>{
+ $('overviewFilter').value='';
+ $('depositFilter').value='';
+ $('statusFilter').value='';
+ page=1;
+ renderOverview();
+};
+
+/* CONSULTA DE MEDIDOR */
 
 function resultHTML(serial){
- if(!String(serial).trim())return '<div class="notice">Digite um número de medidor.</div>';
-
- const x=lookup(serial);
-
- if(!x.bi.length&&!x.sap.length&&!x.moves.length)
-  return '<div class="notice">Medidor não encontrado nas bases importadas nem nas movimentações locais.</div>';
-
- let html=`
- <div class="result">
-  <h3>Medidor ${esc(serial)}</h3>
-  <div class="result-grid">
-   <div><small>Registros BI</small><b>${x.bi.length}</b></div>
-   <div><small>Registros SAP</small><b>${x.sap.length}</b></div>
-   <div><small>Movimentações</small><b>${x.moves.length}</b></div>
-  </div>`;
-
- [['BI',x.bi],['SAP',x.sap]].forEach(([label,arr])=>{
-  if(arr.length){
-   html+=`<h3 style="margin-top:14px">${label}</h3>`;
-   html+=arr.slice(0,8).map(r=>
-    '<div class="notice">'+
-    Object.entries(r).slice(0,14).map(([k,v])=>
-     '<b>'+esc(k)+':</b> '+esc(v)
-    ).join(' | ')+
-    '</div>'
-   ).join('');
-  }
- });
-
- if(x.moves.length){
-  html+='<h3>Movimentações locais</h3><div class="table-wrap"><table>';
-  html+='<thead><tr><th>Data</th><th>Tipo</th><th>Responsável</th><th>Destino</th></tr></thead><tbody>';
-  html+=x.moves.map(m=>`
-   <tr><td>${esc(m.date)}</td><td>${esc(m.type)}</td>
-   <td>${esc(m.person)}</td><td>${esc(m.place)} ${esc(m.details)}</td></tr>
-  `).join('');
-  html+='</tbody></table></div>';
+ if(!String(serial).trim()){
+  return '<div class="notice">Digite o número de série.</div>';
  }
 
- return html+'</div>';
+ const rows=findMeter(serial);
+
+ if(!rows.length){
+  return '<div class="notice">Medidor não encontrado no BI Equatorial. Confira o número ou importe uma planilha atualizada.</div>';
+ }
+
+ let html='';
+
+ rows.forEach((row,index)=>{
+  html+=`
+   <div class="result">
+    <h3>Medidor: ${esc(getSerial(row))}</h3>
+    <p class="hint">Registro ${index+1} de ${rows.length}</p>
+    <div class="result-grid">
+     ${COLUMNS.map(col=>`
+      <div>
+       <small>${esc(col)}</small>
+       <b>${esc(row[col])||'Não informado'}</b>
+      </div>
+     `).join('')}
+    </div>
+   </div>
+  `;
+ });
+
+ const moves=state.moves.filter(m=>
+  normalizeSerial(m.serial)===normalizeSerial(serial)
+ );
+
+ if(moves.length){
+  html+='<div class="result"><h3>Histórico de movimentações locais</h3>';
+  html+='<div class="table-wrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Responsável</th><th>Origem</th><th>Detalhes</th></tr></thead><tbody>';
+
+  html+=moves.map(m=>`
+   <tr>
+    <td>${esc(m.date)}</td>
+    <td>${esc(m.type)}</td>
+    <td>${esc(m.person)}</td>
+    <td>${esc(m.origin)}</td>
+    <td>${esc(m.details)}</td>
+   </tr>
+  `).join('');
+
+  html+='</tbody></table></div></div>';
+ }
+
+ return html;
 }
 
 $('searchBtn').onclick=()=>{
@@ -502,187 +840,256 @@ $('traceBtn').onclick=()=>{
  $('traceResult').innerHTML=resultHTML($('traceSerial').value);
 };
 
-$('saveExp').onclick=()=>{
- const serial=$('expSerial').value.trim();
- const person=$('expPerson').value.trim();
+$('traceSerial').addEventListener('keydown',e=>{
+ if(e.key==='Enter')$('traceBtn').click();
+});
 
- if(!serial)return alert('Informe o número do medidor.');
- if(!person)return alert('Informe o responsável.');
-
- if(pending().some(m=>norm(m.serial)===norm(serial)))
-  return alert('Este medidor já possui uma expedição pendente.');
-
- state.moves.unshift({
-  type:'Expedição',
-  serial,
-  person,
-  place:$('expDestination').value.trim(),
-  protocol:$('expProtocol').value.trim(),
-  details:$('expNotes').value.trim(),
-  date:$('expDate').value||today(),
-  time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
- });
-
- save();
- render();
- alert('Expedição registrada.');
-
- ['expSerial','expPerson','expDestination','expProtocol','expNotes']
- .forEach(id=>$(id).value='');
-};
-
-$('clearExp').onclick=()=>{
- ['expSerial','expPerson','expDestination','expProtocol','expNotes']
- .forEach(id=>$(id).value='');
-};
+/* DEVOLUÇÃO */
 
 $('saveDev').onclick=()=>{
  const serial=$('devSerial').value.trim();
+ const person=$('devPerson').value.trim();
+
  if(!serial)return alert('Informe o número do medidor.');
+ if(!person)return alert('Informe quem recebeu o medidor.');
 
  state.moves.unshift({
   type:'Devolução',
   serial,
-  person:$('devPerson').value.trim(),
+  person,
   origin:$('devOrigin').value.trim(),
-  place:$('devOrigin').value.trim(),
   condition:$('devCondition').value,
   details:$('devNotes').value.trim(),
   date:$('devDate').value||today(),
-  time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+  time:new Date().toLocaleTimeString('pt-BR',{
+   hour:'2-digit',
+   minute:'2-digit'
+  })
  });
 
  save();
  render();
+
  alert('Devolução registrada.');
 
- ['devSerial','devPerson','devOrigin','devNotes']
- .forEach(id=>$(id).value='');
+ clearDev();
 };
 
-$('clearDev').onclick=()=>{
- ['devSerial','devPerson','devOrigin','devNotes']
- .forEach(id=>$(id).value='');
-};
+function clearDev(){
+ ['devSerial','devPerson','devOrigin','devNotes'].forEach(id=>{
+  $(id).value='';
+ });
+ $('devCondition').value='Em triagem';
+ $('devDate').value=today();
+ $('devLookup').innerHTML='';
+}
 
-$('expBody').addEventListener('click',e=>{
- const b=e.target.closest('[data-return]');
- if(!b)return;
- showTab('devolucao');
- $('devSerial').value=b.dataset.return;
+$('clearDev').onclick=clearDev;
+
+$('devSerial').addEventListener('change',()=>{
+ const serial=$('devSerial').value.trim();
+
+ if(serial){
+  $('devLookup').innerHTML=resultHTML(serial);
+ }
 });
 
-/* IMPORTAÇÃO DE EXCEL E CSV */
-function readSheet(file,callback){
- const ext=file.name.toLowerCase().split('.').pop();
+function renderDevolutions(){
+ const rows=state.moves.filter(m=>m.type==='Devolução');
+
+ $('devBody').innerHTML=rows.map(m=>`
+  <tr>
+   <td>${esc(m.date)}</td>
+   <td>${esc(m.serial)}</td>
+   <td>${esc(m.person)}</td>
+   <td>${esc(m.origin)}</td>
+   <td>${esc(m.condition)}</td>
+   <td>${esc(m.details)}</td>
+  </tr>
+ `).join('')||'<tr><td colspan="6" class="empty">Nenhuma devolução registrada.</td></tr>';
+}
+
+/* HISTÓRICO NA VISÃO GERAL */
+
+function renderRecent(){
+ $('recentBody').innerHTML=state.moves.slice(0,15).map(m=>`
+  <tr>
+   <td>${esc(m.date)} ${esc(m.time)}</td>
+   <td>${esc(m.serial)}</td>
+   <td>${esc(m.type)}</td>
+   <td>${esc(m.person)}</td>
+   <td>${esc(m.origin)}</td>
+   <td>${esc(m.details)}</td>
+  </tr>
+ `).join('')||'<tr><td colspan="6" class="empty">Nenhuma movimentação.</td></tr>';
+}
+
+/* IMPORTAÇÃO BI EQUATORIAL */
+
+function mapBI(rows){
+ return rows.map(original=>{
+  const normalized={};
+
+  Object.entries(original).forEach(([key,value])=>{
+   normalized[normalizeHeader(key)]=value;
+  });
+
+  const row={};
+
+  COLUMNS.forEach(col=>{
+   row[col]=normalized[col]??'';
+  });
+
+  return row;
+ }).filter(row=>normalizeSerial(row.NUMERO_SERIE));
+}
+
+function readBI(file){
+ if(!file)return;
+
  const reader=new FileReader();
 
  reader.onload=e=>{
   try{
-   if(!window.XLSX)throw Error('Biblioteca Excel não carregou. Verifique a internet.');
-   const wb=ext==='csv'
-    ?XLSX.read(e.target.result,{type:'string'})
-    :XLSX.read(e.target.result,{type:'array',cellDates:true});
+   if(!window.XLSX){
+    throw new Error('Biblioteca Excel não carregada. Verifique sua internet.');
+   }
 
-   const rows=XLSX.utils.sheet_to_json(
-    wb.Sheets[wb.SheetNames[0]],
-    {defval:''}
+   const workbook=XLSX.read(e.target.result,{
+    type:'array',
+    cellDates:false
+   });
+
+   const sheet=workbook.Sheets[workbook.SheetNames[0]];
+
+   if(!sheet)throw new Error('Planilha não encontrada.');
+
+   const rawRows=XLSX.utils.sheet_to_json(sheet,{
+    defval:'',
+    raw:false
+   });
+
+   if(!rawRows.length){
+    throw new Error('A planilha está vazia.');
+   }
+
+   const headers=Object.keys(rawRows[0]).map(normalizeHeader);
+
+   if(!headers.includes('NUMERO_SERIE')){
+    throw new Error(
+     'A coluna NUMERO_SERIE não foi encontrada. Confira o cabeçalho da planilha.'
+    );
+   }
+
+   const data=mapBI(rawRows);
+
+   if(!data.length){
+    throw new Error('Nenhum medidor válido encontrado na planilha.');
+   }
+
+   state.bi=data;
+   save();
+
+   page=1;
+   render();
+
+   alert(
+    'BI Equatorial importado com sucesso!\n\n'+
+    data.length+' medidores carregados.'
    );
 
-   callback(rows,file.name);
-  }catch(err){
-   alert('Erro ao ler arquivo: '+err.message);
+  }catch(error){
+   console.error(error);
+   alert('Erro na importação:\n'+error.message);
   }
  };
 
- if(ext==='csv')reader.readAsText(file,'UTF-8');
- else reader.readAsArrayBuffer(file);
-}
+ reader.onerror=()=>{
+  alert('Não foi possível ler o arquivo.');
+ };
 
-function importBase(type,file){
- if(!file)return;
-
- readSheet(file,(rows,name)=>{
-  if(!rows.length)return alert('A planilha está vazia.');
-
-  state[type]=rows;
-  save();
-
-  $(type+'Label').classList.add('loaded');
-  render();
-
-  alert(rows.length+' registros importados para '+type.toUpperCase()+'.');
- });
+ reader.readAsArrayBuffer(file);
 }
 
 ['biFile','biFile2'].forEach(id=>{
  $(id).addEventListener('change',e=>{
-  importBase('bi',e.target.files[0]);
+  readBI(e.target.files[0]);
   e.target.value='';
  });
 });
 
-['sapFile','sapFile2'].forEach(id=>{
- $(id).addEventListener('change',e=>{
-  importBase('sap',e.target.files[0]);
-  e.target.value='';
- });
-});
-
-$('clearBI').onclick=()=>{
- if(confirm('Apagar a base BI?')){
-  state.bi=[];
-  save();
-  render();
- }
-};
-
-$('clearSAP').onclick=()=>{
- if(confirm('Apagar a base SAP?')){
-  state.sap=[];
-  save();
-  render();
- }
-};
+/* PRÉVIA DA BASE */
 
 function renderBI(){
- const rows=state.bi.slice(0,10);
- const keys=rows.length?Object.keys(rows[0]).slice(0,9):[];
+ const rows=state.bi.slice(0,20);
 
- $('biHead').innerHTML=keys.length
-  ?'<tr>'+keys.map(k=>`<th>${esc(k)}</th>`).join('')+'</tr>'
-  :'';
-
- $('biPreview').innerHTML=rows.map(r=>
-  '<tr>'+keys.map(k=>`<td>${esc(r[k])}</td>`).join('')+'</tr>'
- ).join('')||'<tr><td class="empty">Importe uma planilha BI.</td></tr>';
+ $('biPreview').innerHTML=rows.map(row=>
+  '<tr>'+
+  COLUMNS.map(col=>`<td>${esc(row[col])}</td>`).join('')+
+  '</tr>'
+ ).join('')||'<tr><td colspan="8" class="empty">Importe a planilha BI.</td></tr>';
 }
 
-/* BACKUP */
+/* LIMPAR BI */
+
+$('clearBI').onclick=()=>{
+ if(!confirm('Deseja realmente apagar a base BI importada?'))return;
+
+ state.bi=[];
+ page=1;
+ save();
+ render();
+};
+
+/* EXPORTAR BI */
+
 function download(blob,name){
- const a=document.createElement('a');
  const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+
  a.href=url;
  a.download=name;
  a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1200);
+
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
+
+$('exportBI').onclick=()=>{
+ const rows=[COLUMNS,...state.bi.map(r=>COLUMNS.map(c=>r[c]))];
+
+ const csv=rows.map(row=>
+  row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')
+ ).join('\r\n');
+
+ download(
+  new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),
+  'BI-Equatorial-'+today()+'.csv'
+ );
+};
+
+/* BACKUP COMPLETO */
 
 $('exportBtn').onclick=()=>{
  download(
-  new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),
+  new Blob([JSON.stringify(state,null,2)],{
+   type:'application/json'
+  }),
   'backup-central-medidores-'+today()+'.json'
  );
 };
 
 /* RELATÓRIOS */
+
 function reportRows(){
- const q=norm($('reportFilter').value);
- const type=$('reportType').value;
+ const q=normalizeSerial($('reportFilter').value);
+ const condition=$('reportCondition').value;
 
  return state.moves.filter(m=>
-  (!type||m.type===type)&&
-  (!q||norm([m.serial,m.person,m.place,m.origin,m.details,m.protocol].join(' ')).includes(q))
+  m.type==='Devolução'&&
+  (!condition||m.condition===condition)&&
+  (!q||normalizeSerial([
+   m.serial,m.person,m.origin,m.details
+  ].join(' ')).includes(q))
  );
 }
 
@@ -691,9 +1098,12 @@ function renderReport(){
 
  $('reportBody').innerHTML=rows.map(m=>`
   <tr>
-   <td>${esc(m.date)}</td><td>${esc(m.serial)}</td>
-   <td>${esc(m.type)}</td><td>${esc(m.person)}</td>
-   <td>${esc(m.place||m.condition)}</td><td>${esc(m.details||m.protocol)}</td>
+   <td>${esc(m.date)}</td>
+   <td>${esc(m.serial)}</td>
+   <td>${esc(m.person)}</td>
+   <td>${esc(m.origin)}</td>
+   <td>${esc(m.condition)}</td>
+   <td>${esc(m.details)}</td>
   </tr>
  `).join('')||'<tr><td colspan="6" class="empty">Nenhum resultado.</td></tr>';
 }
@@ -702,25 +1112,26 @@ $('reportBtn').onclick=renderReport;
 
 $('reportCsv').onclick=()=>{
  const rows=reportRows();
- const head=['Data','Medidor','Tipo','Responsável','Destino','Detalhes'];
+
+ const head=['Data','Medidor','Responsável','Origem','Condição','Detalhes'];
 
  const csv=[head,...rows.map(m=>[
-  m.date,m.serial,m.type,m.person,m.place||m.condition,m.details||m.protocol
+  m.date,m.serial,m.person,m.origin,m.condition,m.details
  ])].map(row=>
   row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')
  ).join('\r\n');
 
  download(
   new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),
-  'relatorio-medidores-'+today()+'.csv'
+  'relatorio-devolucoes-'+today()+'.csv'
  );
 };
 
-/* LEITOR DE CÓDIGO DE BARRAS PELA CÂMERA */
+/* CÂMERA E LEITOR DE CÓDIGO DE BARRAS */
 
 let scannerControls=null;
-let scannerTarget=null;
 let scannerReader=null;
+let scannerTarget=null;
 let scannerBusy=false;
 
 const scannerModal=$('scannerModal');
@@ -728,36 +1139,44 @@ const scannerVideo=$('scannerVideo');
 const scannerStatus=$('scannerStatus');
 
 async function stopScanner(){
+ scannerBusy=false;
+
  if(scannerControls){
-  try{scannerControls.stop();}catch(e){}
+  try{
+   scannerControls.stop();
+  }catch(e){}
   scannerControls=null;
  }
 
  if(scannerVideo.srcObject){
-  scannerVideo.srcObject.getTracks().forEach(track=>track.stop());
+  scannerVideo.srcObject.getTracks().forEach(track=>{
+   track.stop();
+  });
   scannerVideo.srcObject=null;
  }
 
  scannerModal.style.display='none';
  scannerReader=null;
- scannerBusy=false;
 }
 
 async function startScanner(targetId){
  if(scannerBusy)return;
 
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-  alert('Seu navegador não permite acessar a câmera. Abra o site pelo HTTPS.');
+ if(!navigator.mediaDevices||
+    !navigator.mediaDevices.getUserMedia){
+  alert('Câmera indisponível. Acesse o site por HTTPS ou localhost.');
   return;
  }
 
- if(!window.ZXingBrowser){
-  alert('O leitor não carregou. Verifique sua internet e atualize a página.');
+ if(!window.ZXingBrowser||
+    !window.ZXingBrowser.BrowserMultiFormatReader){
+  alert('Biblioteca do leitor não carregou. Atualize a página e verifique a internet.');
   return;
  }
 
  scannerTarget=targetId;
  scannerBusy=true;
+
  scannerModal.style.display='flex';
  scannerStatus.textContent='Solicitando acesso à câmera...';
 
@@ -767,33 +1186,50 @@ async function startScanner(targetId){
   scannerControls=await scannerReader.decodeFromVideoDevice(
    undefined,
    scannerVideo,
-   (result,error,controls)=>{
-    if(result&&!scannerBusy===false){
-     const code=result.getText();
+   (result,error)=>{
+    if(!result||!scannerBusy)return;
 
-     if(code){
-      const destination=scannerTarget;
-      $(destination).value=code.trim();
+    const code=result.getText();
 
-      scannerStatus.textContent='Código identificado: '+code;
+    if(!code)return;
 
-      stopScanner().then(()=>{
-       if(destination==='searchSerial')$('searchBtn').click();
-       if(destination==='traceSerial')$('traceBtn').click();
-       if(destination==='expSerial')$('expPerson').focus();
-       if(destination==='devSerial')$('devPerson').focus();
-      });
+    scannerBusy=false;
+
+    const destination=scannerTarget;
+
+    $(destination).value=code.trim();
+
+    scannerStatus.textContent='Código identificado: '+code;
+
+    stopScanner().then(()=>{
+     if(destination==='searchSerial'){
+      $('searchBtn').click();
      }
-    }
+
+     if(destination==='traceSerial'){
+      $('traceBtn').click();
+     }
+
+     if(destination==='devSerial'){
+      $('devLookup').innerHTML=resultHTML(code);
+      $('devPerson').focus();
+     }
+    });
    }
   );
 
-  scannerStatus.textContent='Câmera ativa. Aponte para o código de barras.';
+  scannerStatus.textContent=
+   'Câmera ativa. Aponte para o código de barras.';
 
  }catch(error){
   console.error(error);
-  scannerBusy=false;
-  scannerStatus.textContent='Não foi possível abrir a câmera. Verifique a permissão do navegador.';
+
+  await stopScanner();
+
+  alert(
+   'Não foi possível abrir a câmera.\n\n'+
+   'Verifique a permissão do navegador, se outra aplicação está usando a câmera e se o site está em HTTPS.'
+  );
  }
 }
 
@@ -803,16 +1239,32 @@ document.querySelectorAll('[data-scan-target]').forEach(button=>{
  });
 });
 
-$('closeScanner').addEventListener('click',()=>{
- stopScanner();
-});
+$('closeScanner').addEventListener('click',stopScanner);
 
 scannerModal.addEventListener('click',e=>{
  if(e.target===scannerModal)stopScanner();
 });
 
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&scannerModal.style.display==='flex'){
+  stopScanner();
+ }
+});
+
+/* RENDER GERAL */
+
+function render(){
+ renderStats();
+ fillFilters();
+ renderOverview();
+ renderBI();
+ renderDevolutions();
+ renderRecent();
+ renderReport();
+}
+
 /* INICIALIZAÇÃO */
-$('expDate').value=today();
+
 $('devDate').value=today();
 
 load();
@@ -820,10 +1272,14 @@ render();
 
 try{
  const last=sessionStorage.getItem('central_active_tab');
- if(last&&$(last))showTab(last);
+
+ if(last&&$(last)){
+  showTab(last);
+ }
 }catch(e){}
 
 })();
 </script>
+
 </body>
 </html>
